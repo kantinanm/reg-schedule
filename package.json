@@ -1,0 +1,26 @@
+{
+  "name": "reg-schedule",
+  "version": "1.0.0",
+  "description": "html2json parse data to collect and return json service with express.js",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "html2json",
+    "express",
+    "nodejs",
+    "mongo"
+  ],
+  "author": "Kantinan Makmee",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "html-to-json": "^0.6.0",
+    "http": "0.0.0",
+    "iconv-lite": "^0.4.24",
+    "path": "^0.12.7",
+    "querystring": "^0.2.0"
+  }
+}
