@@ -1,7 +1,7 @@
 # reg-schedule
 html2json parse data to collect and return json service with express.js
 
-#How to install
+# How to install
 go to upzip directory and cmd type : npm install
 
 # Test URL
