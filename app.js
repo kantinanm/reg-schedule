@@ -20,10 +20,14 @@ app.get('/', function(req, res) {
 app.get('/building/:building', function (req, res) {
 	 
 	 //req.params.building
-	  util.getRoom(req.params.building,function(result) {  
+	  util.getRoom(req.params.building,function(result) {
 		res.json(result);
 	  });
+
+
 });
+
+
 
 app.get('/schedule/:building/:room_id/:year/:semeter', function (req, res) {
 	 
@@ -32,8 +36,14 @@ app.get('/schedule/:building/:room_id/:year/:semeter', function (req, res) {
 		res.json(result);
 	  });*/
 
-	  util.getSchedule(req.params.building,req.params.room_id,req.params.year,req.params.semeter,function(result) {  
-		res.json(result);
+
+	  util.getSchedule(req.params.building,req.params.room_id,req.params.year,req.params.semeter,function(result) {
+
+          /*for(var i=0;i<result.length;i++) {
+
+		  }*/
+
+	  	res.json(result);
 	  });
 
 });

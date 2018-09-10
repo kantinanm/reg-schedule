@@ -157,7 +157,6 @@ exports.getRoomTable = function(bc,room_id,year,semeter,cb) {
 
 exports.getSchedule = function(bc,room_id,year,semeter,cb) {
 
-
 	 var courseList =[];
 	 var option ={
 	    'bc':bc,
@@ -167,33 +166,41 @@ exports.getSchedule = function(bc,room_id,year,semeter,cb) {
 	  }
 
 	query_subject(option,function(data) {
+
+
 	  var scheduleList =[];
 		 for(var i=0;i<data.length;i++) {
 				  var tmp = {
-						'code':data[i].code
-						,'schedule':getSchedule(data[i].href,bc,function(result) {
-						return result;
-					   })
+						'code':data[i].code,
+                        'href':data[i].href
+						/*,'schedule':callSchedule(data[i].href,bc,function(result) {
+						    console.log(result);
+							return result;
+					   })*/
 				  }
-			
-			/*
+
 			query_schedule(data[i].href,bc,function(result) {
 				 tmp["tmp"]=result;
-				 console.log("result :"+result);
+                console.log("result");
+				 console.log(result);
+                scheduleList.push(result);
 				//data[i]['schedule']=result;
-			});*/
+			});
 
-			 console.log("tmp :"+tmp);
+
+			console.log(tmp);
 			courseList.push(tmp);
-			scheduleList.push(tmp);
+
 
 		 }
-      console.log("scheduleList :"+scheduleList);
-	  cb(scheduleList);
+
+
+      console.log(scheduleList);
+	  cb(courseList);
 	  //console.log("query_subject :"+data);
 	  //cb(data);
 	});
-	
+
 	//cb(courseList);
 		
 };
@@ -285,7 +292,7 @@ var query_schedule = function(url,bc,cb) {
 
 }
 
-async function getSchedule(url,bc,cb){
+function callSchedule(url,bc,cb){
   /*
 		var tmpSchedule = {
                 'date':"",
@@ -327,6 +334,7 @@ async function getSchedule(url,bc,cb){
 		  });
 
 }
+
 
 
 
