@@ -37,14 +37,15 @@ app.get('/schedule/:building/:room_id/:year/:semeter', function (req, res) {
 	  });*/
 
 
-	  util.getSchedule(req.params.building,req.params.room_id,req.params.year,req.params.semeter,function(result) {
+	  util.getSchedule(req.params.building,req.params.room_id,req.params.year,req.params.semeter, function(result) {
 
-          /*for(var i=0;i<result.length;i++) {
-
-		  }*/
-
-	  	res.json(result);
+          //setTimeout(res.json(result), 2000)
+         res.json(result);
 	  });
+
+    /*setTimeout(function() {
+        res.json({message: "Delayed for half a second"});
+    }, 2000);*/
 
 });
 

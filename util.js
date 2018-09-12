@@ -179,7 +179,7 @@ exports.getSchedule = function(bc,room_id,year,semeter,cb) {
 					   })*/
 				  }
 
-			query_schedule(data[i].href,bc,function(result) {
+              query_schedule(data[i].href,bc,function(result) {
 				 tmp["tmp"]=result;
                 console.log("result");
 				 console.log(result);
@@ -205,7 +205,7 @@ exports.getSchedule = function(bc,room_id,year,semeter,cb) {
 		
 };
 
-var query_subject = function(opt,cb) {
+var query_subject =   function(opt,cb) {
 
     var url_path = 'http://www.reg2.nu.ac.th/registrar/room_time.asp?f_cmd=1&campusid=65&bc='+opt.bc+'&roomid='+opt.room_id+'&acadyear='+opt.year+'&firstday=4/9/2561&semester='+opt.semeter;
 
@@ -222,12 +222,12 @@ var query_subject = function(opt,cb) {
 
 						return tmp;
 				 }] 
-				 }, function(err, result) {
+				 }, async function(err, result) {
 
 					var courseList =[];
 					
 					//res.json(result);
-					 for(var i=0;i<result.links.length;i++) {
+				     for(var i=0;i<result.links.length;i++) {
 						  if(result.links[i].text.length==6){
 						  var option ={'href':result.links[i].href}
 					      var objAgrs=result.links[i];
@@ -236,19 +236,35 @@ var query_subject = function(opt,cb) {
 								return section_info;
 							 });*/
 							 
-							  var tmp = {
+
+							var tmp = {
 								//'title' :result.links[i].title,
 								'code':result.links[i].text,
-								'href':result.links[i].href,
-								'schedule':[]
+								'href':result.links[i].href
+								 //,'schedule':  callSchedule(result.links[i].href,opt.bc)
 							  }
-							
-							 courseList.push(tmp);
+
+							  //courseList.push(tmp);
+
+                              await  query_schedule(option.href,opt.bc,function(data) {
+
+
+                              	  tmp["schedule"]=data;
+                                  //console.log("result");
+                                  //console.log(result);
+                                  console.log("obj Tmp");
+                                  console.log(tmp);
+
+								  courseList.push(tmp);
+                                  //data[i]['schedule']=result;
+                              });
+
+							 //courseList.push(obj);
 						  }  // end check code = 6
 					 } //end for
 
-					 console.log(courseList);
-					 cb(courseList)
+                	  console.log(courseList);
+                	 await cb(courseList)
 				});
 
 		  });
@@ -256,7 +272,7 @@ var query_subject = function(opt,cb) {
 }
 
 
-var query_schedule = function(url,bc,cb) {
+var query_schedule =  function(url,bc,cb) {
 
   var url_path = 'http://www.reg2.nu.ac.th/registrar/'+url;
 
@@ -292,7 +308,7 @@ var query_schedule = function(url,bc,cb) {
 
 }
 
-function callSchedule(url,bc,cb){
+async function callSchedule(url,bc){
   /*
 		var tmpSchedule = {
                 'date':"",
@@ -305,7 +321,7 @@ function callSchedule(url,bc,cb){
 
      var url_path = 'http://www.reg2.nu.ac.th/registrar/'+url;
 
-	    getUTF8(url_path,function(utf8) {
+    await getUTF8(url_path,function(utf8) {
 		htmlToJson.parse(utf8, {
 				 'tr': ['td', function($tr) {
 					 //console.log("query_section :"+$tr.text());
@@ -329,7 +345,8 @@ function callSchedule(url,bc,cb){
 							 section_info.push(tmpSchedule);
 						}
 					 }
-					cb(section_info);
+           			  //cb(section_info);
+					return section_info;
 				});
 		  });
 
