@@ -53,7 +53,11 @@ app.get('/schedule/:building/:room_id/:year/:semeter', function (req, res) {
 	  util.getSchedule(req.params.building,req.params.room_id,req.params.year,req.params.semeter, function(result) {
 
           //setTimeout(res.json(result), 2000)
-         res.json(result);
+          res.json(result);
+
+          /*res.writeHead(200, {"Content-Type": "application/json"});
+          res.end(JSON.stringify(result));*/
+
 	  });
 
 
