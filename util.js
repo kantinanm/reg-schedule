@@ -156,7 +156,7 @@ exports.getRoomTable = function(bc,room_id,year,semeter,cb) {
 
 
 exports.getSchedule = function(bc,room_id,year,semeter,cb) {
-
+ // process ok
 	 var courseList =[];
 	 var option ={
 	    'bc':bc,
@@ -190,12 +190,13 @@ exports.getSchedule = function(bc,room_id,year,semeter,cb) {
 
 			console.log(tmp);
 			courseList.push(tmp);
-
+			// mongo save
 
 		 }
 
 
       console.log(scheduleList);
+
 	  cb(courseList);
 	  //console.log("query_subject :"+data);
 	  //cb(data);
@@ -350,6 +351,122 @@ async function callSchedule(url,bc){
 				});
 		  });
 
+}
+exports.callData = function(opt,cb) {
+// process ok
+
+    var url_path = 'http://www.reg2.nu.ac.th/registrar/room_time.asp?f_cmd=1&campusid=65&bc='+opt.bc+'&roomid='+opt.room_id+'&acadyear='+opt.year+'&firstday=4/9/2561&semester='+opt.semeter;
+
+
+    var options = {
+        hostname:'www.reg2.nu.ac.th',
+        path:'/registrar/room_time.asp?f_cmd=1&campusid=65&bc='+opt.bc+'&roomid='+opt.room_id+'&acadyear='+opt.year+'&firstday=4/9/2561&semester='+opt.semeter,
+        method:'GET'
+		,headers: {
+
+        }
+    };
+
+
+    var req = http.request(options, function(res) {
+        toUTF8(res,function(utf8str) {
+            htmlToJson.parse(utf8str, {
+                'links': ['a', function($a) {
+                    var tmp = {
+                        'text':$a.text(),
+                        'href':$a.attr('href')
+                    };
+                    return tmp;
+                }]
+            }, function(err, result) {
+
+                var courseList =[];
+
+                //res.json(result);
+                for(var i=0;i<result.links.length;i++) {
+                    if(result.links[i].text.length==6){
+
+                        var tmp = {
+                            //'title' :result.links[i].title,
+                            'code':result.links[i].text,
+                            'href':result.links[i].href
+                            //,'schedule':  callSchedule(result.links[i].href,opt.bc)
+                        }
+
+                        courseList.push(tmp);
+                        //courseList.push(obj);
+                    }  // end check code = 6
+                } //end for
+
+
+                prepair_schedule(courseList,opt.bc,cb);
+
+                /*prepair_schedule(courseList,opt.bc,function(data) {
+                	console.log("map item.");
+                	cb(data);
+				});*/
+
+            });
+        });
+    });
+
+    req.end();
+
+}
+
+var prepair_schedule =   function(obj,bc,cb) {
+
+    for(i=0;i<obj.length;i++){
+         retrieveData(obj[i].href,obj[i].code,bc,function(result){
+        	cb(result);
+		});
+	}
+
+}
+
+var retrieveData = function(url,code,bc,cb) {
+    //cb({'date':'1'});
+
+    var options = {
+        hostname:'www.reg2.nu.ac.th',
+        path:'/registrar/'+url,
+        method:'GET'
+        ,headers: {
+
+        }
+    };
+
+    var req = http.request(options, function(res) {
+        toUTF8(res,function(utf8str) {
+            htmlToJson.parse(utf8str, {
+                'tr': ['td', function($tr) {
+                    //console.log("query_section :"+$tr.text());
+                    var tmp = {
+                        'text':$tr.text()
+                    };
+                    return tmp;
+                }]
+            }, function(err, result) {
+                var section_info =[];
+
+                for(var i=0;i<result.tr.length;i++) {
+                    if(result.tr[i].text==bc){
+                        var tmpSchedule = {
+                            'course':code,
+                        	'date':result.tr[i-3].text,
+                            'start':result.tr[i-2].text,
+                            'room':result.tr[i-1].text
+                        }
+                        //console.log("var tmpSchedule :"+tmpSchedule);
+                        section_info.push(tmpSchedule);
+                    }
+                }
+				cb(section_info);
+            });
+        });
+
+    });
+    req.end();
 }
 
 

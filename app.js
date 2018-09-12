@@ -36,6 +36,19 @@ app.get('/schedule/:building/:room_id/:year/:semeter', function (req, res) {
 		res.json(result);
 	  });*/
 
+    var opt ={
+        'bc':req.params.building,
+        'room_id':req.params.room_id,
+        'year':req.params.year,
+        'semeter':req.params.semeter,
+    }
+/*
+    util.callData(opt, function(result) {
+        //setTimeout(res.json(result), 2000)
+        console.log(result);
+        //res.json(result);
+
+    });*/
 
 	  util.getSchedule(req.params.building,req.params.room_id,req.params.year,req.params.semeter, function(result) {
 
@@ -43,9 +56,7 @@ app.get('/schedule/:building/:room_id/:year/:semeter', function (req, res) {
          res.json(result);
 	  });
 
-    /*setTimeout(function() {
-        res.json({message: "Delayed for half a second"});
-    }, 2000);*/
+
 
 });
 
