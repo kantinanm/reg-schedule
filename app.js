@@ -67,14 +67,14 @@ app.get('/schedule/:building/:room_id/:year/:semeter', function (req, res) {
 
     util.callData(opt, function(result) {
         //setTimeout(res.json(result), 2000)
-        console.log(result);
+        //console.log(result);
         //res.json(result);
 
-        /*db.schedule.insert(result, function(err, docs) {
+        db.schedule.insert(result, function(err, docs) {
             // insert completed
             console.log("callback give result.");
             console.log("insert completed.");
-        });*/
+        });
 
 
 
