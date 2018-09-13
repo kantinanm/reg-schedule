@@ -21,6 +21,8 @@
     "html-to-json": "^0.6.0",
     "http": "0.0.0",
     "iconv-lite": "^0.4.24",
+    "is-number": "^7.0.0",
+    "mongojs": "^2.6.0",
     "path": "^0.12.7",
     "querystring": "^0.2.0"
   }

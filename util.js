@@ -3,6 +3,8 @@ var iconv = require('iconv-lite');
 var htmlToJson = require('html-to-json');
 var querystring = require('querystring');
 
+const isNumber = require('is-number');
+
 var getUTF8 = function(url_path,cb) {
   http.get(url_path , function(res) {
     var str = [];
@@ -279,7 +281,7 @@ var query_schedule =  function(url,bc,cb) {
 
 	    getUTF8(url_path,function(utf8) {
 		htmlToJson.parse(utf8, {
-				 'tr': ['td', function($tr) {
+				 'output': ['td', function($tr) {
 					 //console.log("query_section :"+$tr.text());
 				   var tmp = {
 					 'text':$tr.text()
@@ -289,13 +291,42 @@ var query_schedule =  function(url,bc,cb) {
 				 }, function(err, result) {
 
 					var section_info =[];
+					var eng,thai,dep,unit,code;
+					var codeIndex=0;
 	
-					 for(var i=0;i<result.tr.length;i++) {
+					 for(var i=0;i<result.output.length;i++) {
+
+                         if((isNumber(result.output[i].text))&(result.output[i].text.length==6)){
+                             code=result.output[i].text;
+                             codeIndex=i;
+                         }
+
+                         if(codeIndex+1==i){
+                             eng=result.output[i].text;
+                         }
+
+                         if(codeIndex+3==i){
+                             thai=result.output[i].text;
+                         }
+
+                         if(codeIndex+6==i){
+                             dep=result.output[i].text;
+                         }
+
+                         if(codeIndex+9==i){
+                             unit=result.output[i].text;
+                         }
+
 						if(result.tr[i].text==bc){
 						 var tmpSchedule = {
-                            'date':result.tr[i-3].text,
-							'start':result.tr[i-2].text,
-							'room':result.tr[i-1].text
+                             'eng':eng,
+                             'thai':thai,
+                             'dep':dep,
+                             'unit':unit,
+                             'code':code,
+                            'date':result.output[i-3].text,
+							'start':result.output[i-2].text,
+							'room':result.output[i-1].text
                           }
 							//console.log("var tmpSchedule :"+tmpSchedule);
 							 section_info.push(tmpSchedule);
@@ -324,7 +355,7 @@ async function callSchedule(url,bc){
 
     await getUTF8(url_path,function(utf8) {
 		htmlToJson.parse(utf8, {
-				 'tr': ['td', function($tr) {
+				 'output': ['td', function($tr) {
 					 //console.log("query_section :"+$tr.text());
 				   var tmp = {
 					 'text':$tr.text()
@@ -334,13 +365,43 @@ async function callSchedule(url,bc){
 				 }, function(err, result) {
 
 					var section_info =[];
-	
-					 for(var i=0;i<result.tr.length;i++) {
-						if(result.tr[i].text==bc){
+					//var section_info =[];
+					var eng,thai,dep,unit,code;
+					var codeIndex=0;
+
+					 for(var i=0;i<result.output.length;i++) {
+
+                         if((isNumber(result.output[i].text))&(result.output[i].text.length==6)){
+                             code=result.output[i].text;
+                             codeIndex=i;
+                         }
+
+                         if(codeIndex+1==i){
+                             eng=result.output[i].text;
+                         }
+
+                         if(codeIndex+3==i){
+                             thai=result.output[i].text;
+                         }
+
+                         if(codeIndex+6==i){
+                             dep=result.output[i].text;
+                         }
+
+                         if(codeIndex+9==i){
+                             unit=result.output[i].text;
+                         }
+
+					 	if(result.tr[i].text==bc){
 						 var tmpSchedule = {
-                            'date':result.tr[i-3].text,
-							'start':result.tr[i-2].text,
-							'room':result.tr[i-1].text
+                             'eng':eng,
+                             'thai':thai,
+                             'dep':dep,
+                             'unit':unit,
+                             'code':code,
+                            'date':result.output[i-3].text,
+							'start':result.output[i-2].text,
+							'room':result.output[i-1].text
                           }
 							//console.log("var tmpSchedule :"+tmpSchedule);
 							 section_info.push(tmpSchedule);
@@ -399,7 +460,7 @@ exports.callData = function(opt,cb) {
                 } //end for
 
 
-                prepair_schedule(courseList,opt.bc,cb);
+                prepair_schedule(courseList,opt,cb);
 
                 /*prepair_schedule(courseList,opt.bc,function(data) {
                 	console.log("map item.");
@@ -414,17 +475,17 @@ exports.callData = function(opt,cb) {
 
 }
 
-var prepair_schedule =   function(obj,bc,cb) {
+var prepair_schedule =   function(obj,opt,cb) {
 
     for(i=0;i<obj.length;i++){
-         retrieveData(obj[i].href,obj[i].code,bc,function(result){
+         retrieveData(obj[i].href,opt,function(result){
         	cb(result);
 		});
 	}
 
 }
 
-var retrieveData = function(url,code,bc,cb) {
+var retrieveData = function(url,opt,cb) {
     //cb({'date':'1'});
 
     var options = {
@@ -439,7 +500,7 @@ var retrieveData = function(url,code,bc,cb) {
     var req = http.request(options, function(res) {
         toUTF8(res,function(utf8str) {
             htmlToJson.parse(utf8str, {
-                'tr': ['td', function($tr) {
+                'output': ['td', function($tr) {
                     //console.log("query_section :"+$tr.text());
                     var tmp = {
                         'text':$tr.text()
@@ -448,14 +509,49 @@ var retrieveData = function(url,code,bc,cb) {
                 }]
             }, function(err, result) {
                 var section_info =[];
+                var eng,thai,dep,unit,code_in;
+                var codeIndex=0;
 
-                for(var i=0;i<result.tr.length;i++) {
-                    if(result.tr[i].text==bc){
+
+
+                for(var i=0;i<result.output.length;i++) {
+
+                    if((isNumber(result.output[i].text))&(result.output[i].text.length==6)){
+                        code_in=result.output[i].text;
+                        codeIndex=i;
+                    }
+
+                    if(codeIndex+1==i){
+                        eng=result.output[i].text;
+                    }
+
+                    if(codeIndex+3==i){
+                        thai=result.output[i].text;
+                    }
+
+                    if(codeIndex+6==i){
+                        dep=result.output[i].text;
+                    }
+
+                    if(codeIndex+9==i){
+                        unit=result.output[i].text;
+                    }
+
+                    if(result.output[i].text==opt.bc){
                         var tmpSchedule = {
-                            'course':code,
-                        	'date':result.tr[i-3].text,
-                            'start':result.tr[i-2].text,
-                            'room':result.tr[i-1].text
+                            'eng':eng,
+                            'thai':thai,
+                            'dep':dep,
+                            'unit':unit,
+                            'code':code_in,
+                            //'course':code,
+                        	'date':result.output[i-3].text,
+                            'start':result.output[i-2].text,
+                            'room':result.output[i-1].text,
+                            'building':opt.bc,
+                            'year':opt.year,
+                            'semeter':opt.semeter
+
                         }
                         //console.log("var tmpSchedule :"+tmpSchedule);
                         section_info.push(tmpSchedule);
