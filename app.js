@@ -10,7 +10,7 @@ var iconv = require('iconv-lite');
 
 app.use(bodyParser.json());
 app.use("/public", express.static(__dirname + "/public"));
-
+app.set("view engine", "ejs");
 
 app.get('/', function(req, res) {
     res.sendFile('public/index.html', { root: __dirname });
@@ -50,11 +50,14 @@ app.get('/schedule/:building/:room_id/:year/:semeter', function (req, res) {
 
     });*/
 
-	  util.getSchedule(req.params.building,req.params.room_id,req.params.year,req.params.semeter, function(result) {
+	  util.getSchedule(req.params.building,req.params.room_id,req.params.year,req.params.semeter,  function(result) {
 
           //setTimeout(res.json(result), 2000)
-          res.json(result);
+          //res.json(result);
 
+          //console.log(result);
+          //result.then(res.render('home',{'data':result,'pass':'561'}));
+           res.render('home',{'data':result,'pass':'561'});
           /*res.writeHead(200, {"Content-Type": "application/json"});
           res.end(JSON.stringify(result));*/
 
