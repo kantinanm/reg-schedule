@@ -32,7 +32,7 @@ app.get('/', function(req, res) {
 
 
 app.get('/building/:building', function (req, res) {
-	 
+    //used ok
 	 //req.params.building
 	  util.getRoom(req.params.building,function(result) {
 		res.json(result);
@@ -43,6 +43,7 @@ app.get('/building/:building', function (req, res) {
 
 app.get('/db', function (req, res) {
 
+    //used for get test db
     db.schedule.find(function(err, docs) {
         res.json(docs);
     });
@@ -51,8 +52,8 @@ app.get('/db', function (req, res) {
 
 
 
-app.get('/schedule/:building/:room_id/:year/:semeter', function (req, res) {
-	 
+app.get('/schedule/:building/:room_id/:year/:semeter', async function (req, res) {
+    //used for test db
 	 //req.params.building
 	  /*util.getRoomTable(req.params.building,req.params.room_id,req.params.year,req.params.semeter,function(result) {  
 		res.json(result);
@@ -65,46 +66,105 @@ app.get('/schedule/:building/:room_id/:year/:semeter', function (req, res) {
         'semeter':req.params.semeter,
     }
 
-    util.callData(opt, function(result) {
-        //setTimeout(res.json(result), 2000)
-        //console.log(result);
-        //res.json(result);
 
-        db.schedule.insert(result, function(err, docs) {
+
+    var data = await util.callData(opt,  function(result) {
+        //setTimeout(res.json(result), 2000)
+        console.log(result);
+         //res.json(result);
+        return result;
+        /*db.schedule.insert(result, function(err, docs) {
             // insert completed
             console.log("callback give result.");
             console.log("insert completed.");
-        });
-
+        });*/
 
 
     });
 
-	  /*util.getSchedule(req.params.building,req.params.room_id,req.params.year,req.params.semeter,  function(result) {
-
+    res.json(data);
+     /*
+	  util.getSchedule(req.params.building,req.params.room_id,req.params.year,req.params.semeter,  function(result) {
           //setTimeout(res.json(result), 2000)
-          //res.json(result);
+          res.json(result);
 
-          //console.log(result);
+          console.log(result);
           //result.then(res.render('home',{'data':result,'pass':'561'}));
-           res.render('home',{'data':result,'pass':'561'});
+           //res.render('home',{'data':result,'pass':'561'});
           //res.writeHead(200, {"Content-Type": "application/json"});
           //res.end(JSON.stringify(result));
 
-          db.schedule.insert(result, function(err, docs) {
+          //db.schedule.insert(result, function(err, docs) {
               // insert completed
-              console.log("insert completed.");
-          });
+          //    console.log("insert completed.");
+          //});
 
-	  });*/
+	  });
+    */
 
+});
+
+app.get('/test', function (req, res) {
+    //used for test
+
+    /*util.testData().then(function(data){
+     res.json(data);
+     });*/
+
+    var opt ={
+        'bc':'EE',
+        'room_id':'2565',
+        'year':'2561',
+        'semeter':'1',
+    }
+
+     //var url ='class_info_2.asp?backto=room_time&option=1&courseid=18427&classid=354831&acadyear=2561&semester=1&normalURL=f%5Fcmd%3D1%26campusid%3D65%26campusname%3D%26bc%3DEE%26bn%3D%26roomid%3D2565%26acadyear%3D2561%26firstday%3D4%2F9%2F2561%26semester%3D1';
+
+    /*util.retrieveDataPromise(url,opt).then(function(data){
+        res.json(data);
+    });*/
+    util.getRoomTable(opt.bc,opt.room_id,opt.year,opt.semeter,function(result) {
+
+        res.json(result);
+
+    })
 
 
 });
 
+app.get('/schedule2/:building/:room_id/:year/:semeter', function (req, res) {
+
+    var opt ={
+        'bc':req.params.building,
+        'room_id':req.params.room_id,
+        'year':req.params.year,
+        'semeter':req.params.semeter,
+    }
+
+    util.promiseData(opt).then(async function(result){
+
+
+            var section_info =[];
+            var counter =1;
+            for(var i=0;i<result.length;i++) {
+                await  util.retrieveDataPromise(result[i].href, opt).then(function (data) {
+                        section_info.push(data);
+                        counter++;
+                    //console.log(result.findIndex(data[0].code));
+                    });
+
+            }
+
+        res.json(section_info);
+
+        //res.json(result);
+    })
+
+});
 
 app.get('/section', function (req, res) {
 
+        //used for test
 	    //var url_path = 'http://www.reg2.nu.ac.th/registrar/class_info_2.asp?backto=room_time&option=1&courseid=16162&classid=352916&acadyear=2561&semester=1';
     	var url_path ='http://www.reg2.nu.ac.th/registrar/class_info_2.asp?backto=room_time&option=1&courseid=20044&classid=355200&acadyear=2561&semester=1';
 		getUTF8(url_path,function(utf8) {
@@ -201,6 +261,4 @@ var port = process.env.PORT || 3000;
 
 app.listen(port, function() {
     console.log('Starting node.js on port ' + port);
-	
-	
 });

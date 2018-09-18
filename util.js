@@ -41,6 +41,30 @@ var toUTF8 = function(res,cb) {
   });
 };
 
+var toUTF8promise =function(res) {
+    return new Promise(function(resolve, reject) {
+
+        //process
+        var str = [];
+        res.on('data', function(chunk) {
+            str.push(chunk);
+        });
+
+        res.on('end', function() {
+            var total = 0;
+            for(var i=0;i<str.length;i++) {
+                total+=str[i].length;
+            }
+            var content = Buffer.concat(str,total);
+            var utf8st=iconv.decode(content,'win874');
+            //cb(utf8st);
+            var x =1;
+            if(x == 0) reject("Error")
+            else resolve(utf8st)
+        });
+    })
+};
+
 
 
 exports.getData = function(url_path,cb) {
@@ -68,7 +92,7 @@ exports.getData = function(url_path,cb) {
 exports.getRoom = function(bc,cb) {
 
 	 var url_path = 'http://www.reg2.nu.ac.th/registrar/room_time.asp?f_cmd=1&campusid=65&bc='+bc;
-		
+		console.log("getRoom" +url_path);
 		getUTF8(url_path,function(utf8) {
 		htmlToJson.parse(utf8, {
 				 'option': ['option', function($op) {
@@ -107,7 +131,9 @@ exports.getRoomTable = function(bc,room_id,year,semeter,cb) {
 
 
 	  var url_path = 'http://www.reg2.nu.ac.th/registrar/room_time.asp?f_cmd=1&campusid=65&bc='+bc+'&roomid='+room_id+'&acadyear='+year+'&firstday=4/9/2561&semester='+semeter;
-		
+
+	  console.log(url_path);
+
 		getUTF8(url_path,function(utf8) {
 		htmlToJson.parse(utf8, {
 				 'links': ['a', function($a) {
@@ -155,7 +181,6 @@ exports.getRoomTable = function(bc,room_id,year,semeter,cb) {
 		  });
 
 };
-
 
 exports.getSchedule = function(bc,room_id,year,semeter,cb) {
  // process ok
@@ -317,7 +342,7 @@ var query_schedule =  function(url,bc,cb) {
                              unit=result.output[i].text;
                          }
 
-						if(result.tr[i].text==bc){
+						if(result.output[i].text==bc){
 						 var tmpSchedule = {
                              'eng':eng,
                              'thai':thai,
@@ -563,6 +588,179 @@ var retrieveData = function(url,opt,cb) {
 
     });
     req.end();
+}
+
+exports.promiseData =function(opt) {
+    return new Promise(function(resolve, reject) {
+       // var x = a * b
+        //process
+
+        var options = {
+            hostname:'www.reg2.nu.ac.th',
+            path:'/registrar/room_time.asp?f_cmd=1&campusid=65&bc='+opt.bc+'&roomid='+opt.room_id+'&acadyear='+opt.year+'&firstday=4/9/2561&semester='+opt.semeter,
+            method:'GET'
+            ,headers: {
+
+            }
+        };
+        var req = http.request(options, function(res) {
+            toUTF8promise(res).then(function (utf8str){
+
+                htmlToJson.parse(utf8str, {
+                    'links': ['a', function($a) {
+                        var tmp = {
+                            'text':$a.text(),
+                            'href':$a.attr('href')
+                        };
+                        return tmp;
+                    }]
+                }).done(function (result) {
+
+                    var courseList =[];
+
+                    //res.json(result);
+                    for(var i=0;i<result.links.length;i++) {
+                        if(result.links[i].text.length==6){
+
+                            var tmp = {
+                                'code':result.links[i].text,
+                                'href':result.links[i].href
+                            }
+                            courseList.push(tmp);
+                        }  // end check code = 6
+                    } //end for
+
+                    console.log(courseList);
+                    resolve(courseList);
+                }, function (err) {
+                    // Handle error
+                    console.log("error");
+                    reject(null);
+                });
+
+
+            })// end then toUTF8promise
+
+        })
+        req.end();
+    })
+}
+
+exports.testData =function() {
+    return new Promise(function(resolve, reject) {
+        // var x = a * b
+        //process
+        var html = '<div id="items"><div class="item">1</div><div class="item">2</div></div>';
+
+        htmlToJson.parse(html, function () {
+            return this.map('.item', function ($item) {
+                return $item.text();
+            });
+        }).done(function (items) {
+            // Items should be: ['1','2']
+            console.log(items);
+            resolve(items);
+        }, function (err) {
+            // Handle error
+            console.log("error");
+            reject(null);
+        });
+
+        /*
+         if(x == 0) reject("Error")
+         else resolve(x)*/
+    })
+}
+
+exports.retrieveDataPromise =function(url,opt) {
+
+    var options = {
+        hostname:'www.reg2.nu.ac.th',
+        path:'/registrar/'+url,
+        method:'GET'
+        ,headers: {
+        }
+    };
+    return new Promise(function(resolve, reject) {
+
+        var req = http.request(options, function(res) {
+            toUTF8promise(res).then(function (utf8str){
+
+                    htmlToJson.parse(utf8str, {
+                        'output': ['td', function($tr) {
+                            //console.log("query_section :"+$tr.text());
+                            var tmp = {
+                                'text':$tr.text()
+                            };
+                            return tmp;
+                        }]
+                    }).done(function (result) {
+                        // Items should be: ['1','2']
+
+                        var section_info =[];
+                        var eng,thai,dep,unit,code_in;
+                        var codeIndex=0;
+
+
+                        for(var i=0;i<result.output.length;i++) {
+
+                            if ((isNumber(result.output[i].text)) & (result.output[i].text.length == 6)) {
+                                code_in = result.output[i].text;
+                                codeIndex = i;
+                            }
+
+                            if (codeIndex + 1 == i) {
+                                eng = result.output[i].text;
+                            }
+
+                            if (codeIndex + 3 == i) {
+                                thai = result.output[i].text;
+                            }
+
+                            if (codeIndex + 6 == i) {
+                                dep = result.output[i].text;
+                            }
+
+                            if (codeIndex + 9 == i) {
+                                unit = result.output[i].text;
+                            }
+
+                            if (result.output[i].text == opt.bc) {
+                                var tmpSchedule = {
+                                    'eng': eng,
+                                    'thai': thai,
+                                    'dep': dep,
+                                    'unit': unit,
+                                    'code': code_in,
+                                    //'course':code,
+                                    'date': result.output[i - 3].text,
+                                    'start': result.output[i - 2].text,
+                                    'room': result.output[i - 1].text,
+                                    'building': opt.bc,
+                                    'year': opt.year,
+                                    'semeter': opt.semeter
+
+                                }
+                                //console.log("var tmpSchedule :"+tmpSchedule);
+                                section_info.push(tmpSchedule);
+                            }
+                        }
+
+                        console.log(section_info);
+                        resolve(section_info);
+                    }, function (err) {
+                        // Handle error
+                        console.log("error");
+                        reject(null);
+                    });
+                }
+            );
+
+        }); // var reg
+        req.end();
+
+    })
+
 }
 
 
