@@ -617,7 +617,7 @@ exports.promiseData =function(opt) {
                 }).done(function (result) {
 
                     var courseList =[];
-
+                    var checkList =[];
                     //res.json(result);
                     for(var i=0;i<result.links.length;i++) {
                         if(result.links[i].text.length==6){
@@ -626,7 +626,15 @@ exports.promiseData =function(opt) {
                                 'code':result.links[i].text,
                                 'href':result.links[i].href
                             }
-                            courseList.push(tmp);
+
+                            if(checkList.indexOf(result.links[i].text)>=0){
+                                console.log("not add ");
+                            }else{
+                                courseList.push(tmp);
+                                checkList.push(result.links[i].text);
+                                console.log("add !! no dupicate.");
+                            }
+
                         }  // end check code = 6
                     } //end for
 
