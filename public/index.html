@@ -1,9 +1,156 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <title>Test</title>	
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/css?family=Mali" rel="stylesheet">
+    <title>ระบบจองห้องเรียนออนไลน์</title>
+    <style>
+      body{
+        font-family: 'Mali', cursive;
+      }
+    </style>
   </head>
   <body>
-  <h1>Helloworld !</h1>
+      <div class="container-fluid">
+        <nav class="navbar navbar-light bg-light">
+          <a class="navbar-brand" href="#">
+            <i class="material-icons">computer</i>
+            ระบบจองห้องเรียนออนไลน์
+          </a>
+        </nav>
+        <div class="row">
+          <!--<div class="col-sm">
+            ตารางการใช้ห้องเรียน
+          </div>-->
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            <div class="card">
+              <div class="card-header">
+                ค้นหาข้อมูล
+              </div>
+              <div class="card-body">
+                <form>
+                  <div class="form-row">
+                    <div class="form-group col-md-2">
+                      <label for="cboBuilding">อาคารเรียน</label>
+                      <select id="cboBuilding" class="form-control">
+                        <option selected>Choose...</option>
+                        <option value="EE">EE</option>
+                        <option value="EN">EN</option>
+                        <option value="CE">CE</option>
+                        <option value="IE">IE</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="cboRoom">ห้องเรียน</label>
+                        <select id="cboRoom" class="form-control">
+                          <option selected>Choose...</option>
+                        </select>
+                      </div>
+                  </div>
+                  <!--<button type="submit" class="btn btn-secondary">ค้นหา</button>-->
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+              <div class="card">
+                <div class="card-header">
+                  ตารางการใช้ห้องเรียน
+                </div>
+                <div class="card-body">
+                    <div id="tableDiv">
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+
+    <script>
+      $(document).ready(function(){
+        var response = [{
+          "time":"08:00-09:00"},{"time":"09:00-10:00"},{"time":"10:00-11:00"},{
+          "time":"11:00-12:00"},{"time":"12:00-13:00"},{"time":"13:00-14:00"},{
+          "time":"14:00-15:00"},{"time":"15:00-16:00"},{"time":"16:00-17:00"},{
+          "time":"17:00-18:00"},{"time":"18:00-19:00"},{"time":"19:00-20:00"},{
+          "time":"20:00-21:00"
+        }];
+        var dates = [{
+          "in_date":"อาทิตย์"},{"in_date":"จันทร์"},{
+          "in_date":"อังคาร"},{"in_date":"พุธ"},{
+          "in_date":"พฤหัสบดี"},{"in_date":"ศุกร์"},{
+          "in_date":"เสาร์"
+        }];
+        //console.log(response);
+        var table_body = '<table class="table table-hover" id="example"><thead>';
+            table_body+='<tr><th>Date/Time</th>';
+            $.each(response, function(key, value) {
+              table_body +='<th>';
+              table_body +=value.time;
+              table_body +='</th>';
+            });
+              table_body+='</tr></thead><tbody>';
+            $.each(dates, function(key, value) {
+              table_body +='<tr>';
+              table_body +='<td>';
+              table_body +=value.in_date;
+              table_body +='</td>';
+                for(j =0;j<13;j++){
+                  table_body +='<td>';
+                  table_body +='';
+                  table_body +='</td>';
+                }
+              table_body +='</tr>';
+            });  
+            table_body+='</tbody>';
+        $('#tableDiv').html(table_body);
+      });
+      $( "#cboBuilding" ).change(function() {
+        $("#cboRoom option").remove();
+        $("#cboRoom").append('<option selected>Choose...</option>');
+        $.getJSON( "http://localhost:3000/building/"+$("#cboBuilding").val(), function( data ) {
+          //console.log(data);
+          $.each(data, function(key, value) {
+            var result = value.title.split('ความจุ : ');
+            var text = value.title.split(' ประเภท');
+            if(result[1].substring(0,1) != 0){
+              $('#cboRoom')
+              .append($("<option></option>")
+                .attr("value",value.room_id)
+                .text(text[0])); 
+            }
+          });
+        });
+      });
+
+      $( "#cboRoom" ).change(function() {
+        $.getJSON( "http://localhost:3000/schedule2/"+$("#cboBuilding").val()+"/"+$("#cboRoom").val()+"/2561/1", function( data ) {
+          $.each(data, function(key, value) {
+            $.each(value, function(key, val) {
+              if($("#cboRoom option:selected").text()==val.room){
+                console.log(val.eng+" "+val.code+" "+val.date+" "+val.start+" "+val.room);
+              }
+            });
+          });
+        });
+      });
+    </script>
   </body>
 </html>
