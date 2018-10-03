@@ -84,44 +84,9 @@
       </div>
 
     <script>
-      $(document).ready(function(){
-        /*var response = [{
-          "time":"08:00-09:00"},{"time":"09:00-10:00"},{"time":"10:00-11:00"},{
-          "time":"11:00-12:00"},{"time":"12:00-13:00"},{"time":"13:00-14:00"},{
-          "time":"14:00-15:00"},{"time":"15:00-16:00"},{"time":"16:00-17:00"},{
-          "time":"17:00-18:00"},{"time":"18:00-19:00"},{"time":"19:00-20:00"},{
-          "time":"20:00-21:00"
-        }];
-        var dates = [{
-          "in_date":"อาทิตย์"},{"in_date":"จันทร์"},{
-          "in_date":"อังคาร"},{"in_date":"พุธ"},{
-          "in_date":"พฤหัสบดี"},{"in_date":"ศุกร์"},{
-          "in_date":"เสาร์"
-        }];
-        //console.log(response);
-        var table_body = '<table class="table table-hover" id="example"><thead>';
-            table_body+='<tr><th>Date/Time</th>';
-            $.each(response, function(key, value) {
-              table_body +='<th>';
-              table_body +=value.time;
-              table_body +='</th>';
-            });
-              table_body+='</tr></thead><tbody>';
-            $.each(dates, function(key, value) {
-              table_body +='<tr>';
-              table_body +='<td>';
-              table_body +=value.in_date;
-              table_body +='</td>';
-                for(j =0;j<13;j++){
-                  table_body +='<td>';
-                  table_body +='';
-                  table_body +='</td>';
-                }
-              table_body +='</tr>';
-            });  
-            table_body+='</tbody>';
-        $('#tableDiv').html(table_body);*/
-      });
+      /*$(document).ready(function(){
+
+      });*/
       $( "#cboBuilding" ).change(function() {
         $("#cboRoom option").remove();
         $("#cboRoom").append('<option selected>Choose...</option>');
@@ -142,11 +107,11 @@
 
       $( "#cboRoom" ).change(function() {
         var response = [{
-              "time":"08:00-08:50"},{"time":"09:00-09:50"},{"time":"10:00-10:50"},{
-              "time":"11:00-11:50"},{"time":"12:00-12:50"},{"time":"13:00-13:50"},{
-              "time":"14:00-14:50"},{"time":"15:00-15:50"},{"time":"16:00-16:50"},{
-              "time":"17:00-17:50"},{"time":"18:00-18:50"},{"time":"19:00-19:50"},{
-              "time":"20:00-20:50"
+              "time":"08:00-09:00"},{"time":"09:00-10:00"},{"time":"10:00-11:00"},{
+              "time":"11:00-12:00"},{"time":"12:00-13:00"},{"time":"13:00-14:00"},{
+              "time":"14:00-15:00"},{"time":"15:00-16:00"},{"time":"16:00-17:00"},{
+              "time":"17:00-18:00"},{"time":"18:00-19:00"},{"time":"19:00-20:00"},{
+              "time":"20:00-21:00"
             }];
             var dates = [{
               "in_date":"อาทิตย์"},{"in_date":"จันทร์"},{
@@ -154,9 +119,10 @@
               "in_date":"พฤหัสบดี"},{"in_date":"ศุกร์"},{
               "in_date":"เสาร์"
             }];
-            //console.log(response);
-        $.getJSON( "http://localhost:3000/schedule2/"+$("#cboBuilding").val()+"/"+$("#cboRoom").val()+"/2561/1", function( data ) {
-          var table_body = '<table class="table table-hover" id="example"><thead>';
+          //console.log(response);
+          $.getJSON( "http://localhost:3000/schedule2/"+$("#cboBuilding").val()+"/"+$("#cboRoom").val()+"/2561/1", function( data ) {
+            //$("td.sunAt8").append("000000");
+          var table_body = '<table class="table table-bordered" id="example"><thead>';
               table_body+='<tr><th>Date/Time</th>';
               $.each(response, function(key, getTime) {
                 table_body +='<th>';
@@ -166,35 +132,39 @@
                 table_body+='</tr></thead><tbody>';
               $.each(dates, function(key, getDate) {
                 table_body +='<tr>';
-                table_body +='<td>';
+                table_body +='<th>';
                 table_body +=getDate.in_date;
-                table_body +='</td>';
+                table_body +='</th>';
                 $.each(data, function(key, value) {
                   $.each(value, function(key, val) {
                     if($("#cboRoom option:selected").text()==val.room){
                       if(val.date==getDate.in_date){
-                        var in_time = val.start.split('-');
-                        //console.log(in_time[0]+"-"+in_time[1]);
-                        table_body +='<td>';
-                        //table_body +='<i class="material-icons" title='+val.code+'>local_offer</i>';
-                        table_body +=val.code;
-                        table_body +='</td>';
-                      }
+                        for(var j=0;j<response.length;j++){
+                          var in_time = val.start.split('-');
+                          var on_time = response[j].time.split('-');
+                          if(in_time[0]==on_time[0]){
+                            table_body +='<td>';
+                            table_body +=val.code;
+                            table_body +='</td>';
+                          }
+                        }
+                      }  
                     }
                   });
                 });
                 table_body +='</tr>';
               });  
               table_body+='</tbody>';
-          $('#tableDiv').html(table_body);
+            $('#tableDiv').html(table_body);
 
-            $.each(data, function(key, value) {
-              $.each(value, function(key, val) {
-                if($("#cboRoom option:selected").text()==val.room){
-                  console.log(val.eng+" "+val.code+" "+val.date+" "+val.start+" "+val.room);
-                }
+              $.each(data, function(key, value) {
+                $.each(value, function(key, val) {
+                  if($("#cboRoom option:selected").text()==val.room){
+                    var in_time = val.start.split('-');
+                    console.log(val.eng+" "+val.code+" "+val.date+" "+val.start+" "+val.room);
+                  }
+                });
               });
-            });
         });
       });
     </script>
