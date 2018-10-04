@@ -32,9 +32,6 @@
           </a>
         </nav>
         <div class="row">
-          <!--<div class="col-sm">
-            ตารางการใช้ห้องเรียน
-          </div>-->
         </div>
         <div class="row">
           <div class="col-sm">
@@ -91,7 +88,6 @@
         $("#cboRoom option").remove();
         $("#cboRoom").append('<option selected>Choose...</option>');
         $.getJSON( "http://localhost:3000/building/"+$("#cboBuilding").val(), function( data ) {
-          //console.log(data);
           $.each(data, function(key, value) {
             var result = value.title.split('ความจุ : ');
             var text = value.title.split(' ประเภท');
@@ -121,6 +117,8 @@
             }];
           $.getJSON( "http://localhost:3000/schedule2/"+$("#cboBuilding").val()+"/"+$("#cboRoom").val()+"/2561/1", function( data ) {
           var temp = [];
+          //var chk=0;
+          //var count=0;
           $.each(data, function(key, value) {
             $.each(value, function(key, val) {
               if($("#cboRoom option:selected").text()==val.room){
@@ -143,7 +141,7 @@
                 }else if(in_time[0]=="18:00"){ index=10;
                 }else if(in_time[0]=="19:00"){ index=11;
                 }else {index=12;}
-                temp.push({v:parseInt(on_time), eng:val.eng, thai:val.thai, code:val.code, date: val.date, start:val.start, room:val.room, span:span.toString(), col:index});
+                temp.push({v:parseInt(on_time), eng:val.eng, thai:val.thai, code:val.code, date: val.date, start:val.start, end:all_time, room:val.room, span:span.toString(), col:index});
               }
             });
           });
@@ -152,7 +150,6 @@
               if(a.v < b.v){ return -1}
                 return 0;
           });
-          //var count=0;
           var table_body = '<table class="table table-bordered" id="example"><thead>';
               table_body+='<tr><th>Date/Time</th>';
               $.each(response, function(key, getTime) {
@@ -166,35 +163,38 @@
                 table_body +='<th>';
                 table_body +=getDate.in_date;
                 table_body +='</th>';
-                $.each(temp, function(key, val) {
-                  if($("#cboRoom option:selected").text()==val.room){
-                    //var i=0;
-                    if(val.date==getDate.in_date){
-                      /*for(var j=count;j<response.length;j++){
-                        if(j==val.col){
+                for(var i=0;i<13;i++){
+                  $.each(temp, function(key, val) {
+                    if($("#cboRoom option:selected").text()==val.room){
+                      if(val.date==getDate.in_date){
+                        if(i==val.col){
                           table_body +='<td colspan="'+val.span+'">';
-                          table_body +=val.code+" "+i;
+                          table_body +=val.code;
                           table_body +='</td>';
-                          break;
-                        }else{
-                          if(j<val.col){
-                            table_body +='<td>';
-                            table_body +=i+" "+count;
-                            table_body +='</td>';
-                            i++;
-                          }
+                          return false;
                         }
-                      }*/
-                      //count=i;
+                      }
                     }
-                  }
-                });
+                  });
+                    table_body +='<td>';
+                    table_body +=i;
+                    table_body +='</td>';
+                }
+                //chk=0;
+                //count=0;
                 table_body +='</tr>';
               });
               table_body+='</tbody>';
             $('#tableDiv').html(table_body);
 
-            console.log(temp);
+            //console.log(temp);
+            $.each(data, function(key, value) {
+              $.each(value, function(key, val) {
+                if($("#cboRoom option:selected").text()==val.room){
+                  console.log(val.date+" "+val.code+" "+val.start);
+                }
+              });
+            });
         });
       });
     </script>
