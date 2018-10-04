@@ -117,7 +117,7 @@
             }];
           $.getJSON( "http://localhost:3000/schedule2/"+$("#cboBuilding").val()+"/"+$("#cboRoom").val()+"/2561/1", function( data ) {
           var temp = [];
-          //var chk=0;
+          var chk=0;
           //var count=0;
           $.each(data, function(key, value) {
             $.each(value, function(key, val) {
@@ -169,16 +169,16 @@
                       if(val.date==getDate.in_date){
                         if(i==val.col){
                           table_body +='<td colspan="'+val.span+'">';
-                          table_body +=val.code;
+                          table_body +=val.code+" "+i;
                           table_body +='</td>';
                           return false;
                         }
                       }
                     }
                   });
-                    table_body +='<td>';
+                    /*table_body +='<td>';
                     table_body +=i;
-                    table_body +='</td>';
+                    table_body +='</td>';*/
                 }
                 //chk=0;
                 //count=0;
