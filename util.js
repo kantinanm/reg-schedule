@@ -2,6 +2,7 @@ var http = require('http');
 var iconv = require('iconv-lite');
 var htmlToJson = require('html-to-json');
 var querystring = require('querystring');
+var _ = require('lodash');
 
 const isNumber = require('is-number');
 
@@ -627,13 +628,15 @@ exports.promiseData =function(opt) {
                                 'href':result.links[i].href
                             }
 
-                            if(checkList.indexOf(result.links[i].text)>=0){
+                            /*if(checkList.indexOf(result.links[i].text)>=0){
                                 console.log("not add ");
                             }else{
                                 courseList.push(tmp);
                                 checkList.push(result.links[i].text);
                                 console.log("add !! no dupicate.");
-                            }
+                            }*/
+                            courseList.push(tmp);
+                            checkList.push(result.links[i].text);
 
                         }  // end check code = 6
                     } //end for

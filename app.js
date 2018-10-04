@@ -8,6 +8,8 @@ var path = require('path');
 var iconv = require('iconv-lite');
 //var public = path.join(__dirname, 'public');
 const isNumber = require('is-number');
+var _ = require('lodash');
+
 
 var mongojs = require('./db');
 var db = mongojs.connect;
@@ -143,12 +145,48 @@ app.get('/schedule2/:building/:room_id/:year/:semeter', function (req, res) {
 
     util.promiseData(opt).then(async function(result){
 
-
+            var checkList =[];
             var section_info =[];
             var counter =1;
             for(var i=0;i<result.length;i++) {
                 await  util.retrieveDataPromise(result[i].href, opt).then(function (data) {
-                        section_info.push(data);
+
+                    /*if(checkList.indexOf(result.links[i].text)>=0){
+                     console.log("not add ");
+                     }else{
+                     courseList.push(tmp);
+                     checkList.push(result.links[i].text);
+                     console.log("add !! no dupicate.");
+                     }*/
+
+                    /*
+                    if(checkList.length==0){
+                        checkList.push(data);
+                    }else{
+                        var obj =checkList[checkList.length-1];
+                        var flagDup=false;
+
+                        if(obj.length==data.length){
+                            //
+                            console.log("length eq.");
+
+                            for(k=0;k<data.length;k++){
+                                if(obj[k].code==data[k].code){
+
+                                }
+
+                            }
+                        }else{
+                            // add
+                        }
+
+
+
+
+                    }
+                    */
+
+                    section_info.push(data);
                         counter++;
                     //console.log(result.findIndex(data[0].code));
                     });
@@ -156,6 +194,14 @@ app.get('/schedule2/:building/:room_id/:year/:semeter', function (req, res) {
             }
 
         res.json(section_info);
+        /*
+        console.log('unique array is ',_.uniq(section_info, function (e) {
+            return e.code;
+        }));
+
+        res.json(_.uniq(section_info, function (e) {
+            return e.code;
+        }));*/
 
         //res.json(result);
     })
