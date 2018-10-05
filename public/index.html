@@ -53,11 +53,15 @@
                       </select>
                     </div>
                     <div class="form-group col-md-2">
-                        <label for="cboRoom">ห้องเรียน</label>
-                        <select id="cboRoom" class="form-control">
-                          <option selected>Choose...</option>
-                        </select>
-                      </div>
+                      <label for="cboRoom">ห้องเรียน</label>
+                      <select id="cboRoom" class="form-control">
+                        <option selected>Choose...</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-2">
+                      <label for="cboRoom">วันที่</label>
+                      <input type="date" class="form-control"></input>
+                    </div>
                   </div>
                   <!--<button type="submit" class="btn btn-secondary">ค้นหา</button>-->
                 </form>
@@ -189,13 +193,19 @@
             $('#tableDiv').html(table_body);
 
             //console.log(temp);
-            $.each(data, function(key, value) {
+            /*$.each(data, function(key, value) {
               $.each(value, function(key, val) {
                 if($("#cboRoom option:selected").text()==val.room){
                   console.log(val.date+" "+val.code+" "+val.start);
                 }
               });
-            });
+            });*/
+            var fullDate = new Date();
+            var month = fullDate.getMonth()+1;
+            var day = fullDate.getDate();
+            var year = fullDate.getFullYear();
+            var datenow = day+"/"+month+"/"+year;
+            console.log(datenow);
         });
       });
     </script>
