@@ -14,6 +14,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
+    <!-- jQuery Datepicker -->
+    <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.css" rel="stylesheet"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link href="https://fonts.googleapis.com/css?family=Mali" rel="stylesheet">
     <title>ระบบจองห้องเรียนออนไลน์</title>
@@ -60,7 +65,7 @@
                     </div>
                     <div class="form-group col-md-2">
                       <label for="cboRoom">วันที่</label>
-                      <input type="date" class="form-control"></input>
+                      <input class="form-control" id="mydate">
                     </div>
                   </div>
                   <!--<button type="submit" class="btn btn-secondary">ค้นหา</button>-->
@@ -86,14 +91,49 @@
 
     <script>
       $(document).ready(function(){
-        var fullDate = new Date();
-        var month = fullDate.getMonth()+1;
+        var dates = new Date();
+        /*var month = fullDate.getMonth()+1;
         var day = fullDate.getDate();
         var year = fullDate.getFullYear();
-        var datenow = day+"/"+month+"/"+year;
-        var DateStr = fullDate.toString();
-        //console.log(DateStr.substring(0,3));
-        console.log(datenow);
+        var datenow = day+"-"+month+"-"+year;*/
+        var DateStr = dates.toString();
+        var chkDate = DateStr.substring(0,3);
+        var dateString = [{"day":"Sun"},{"day":"Mon"},{"day":"Tue"},
+                          {"day":"Wed"},{"day":"Thu"},{"day":"Fri"},{"day":"Sat"}];
+        var before=0;
+        var after=0;
+        for(var i=0;i<7;i++){
+          if(chkDate==dateString[i].day){
+            before-=i;
+            after+=(6-i);
+          }
+        }
+
+        function startDate(before) {
+          var dates = new Date();
+          var res = dates.setTime(dates.getTime() + (before * 24 * 60 * 60 * 1000));
+          return new Date(res);
+        }
+
+        var startdate = startDate(before);
+        console.log(startdate);
+
+        function endDate(after) {
+          var dates = new Date();
+          var res = dates.setTime(dates.getTime() + (after * 24 * 60 * 60 * 1000));
+          return new Date(res);
+        }
+
+        var enddate = endDate(after);
+        console.log(enddate);
+
+         $("#mydate").datepicker({
+           changeYear: true,
+           changeMonth: true,
+           dateFormat: "dd-m-yy",
+           yearRange: "-100:+20",
+         });
+         //$("#mydate").datepicker("setDate",dates);
       });
       $( "#cboBuilding" ).change(function() {
         $("#cboRoom option").remove();
