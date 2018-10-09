@@ -85,9 +85,16 @@
       </div>
 
     <script>
-      /*$(document).ready(function(){
-
-      });*/
+      $(document).ready(function(){
+        var fullDate = new Date();
+        var month = fullDate.getMonth()+1;
+        var day = fullDate.getDate();
+        var year = fullDate.getFullYear();
+        var datenow = day+"/"+month+"/"+year;
+        var DateStr = fullDate.toString();
+        //console.log(DateStr.substring(0,3));
+        console.log(datenow);
+      });
       $( "#cboBuilding" ).change(function() {
         $("#cboRoom option").remove();
         $("#cboRoom").append('<option selected>Choose...</option>');
@@ -106,7 +113,7 @@
       });
 
       $( "#cboRoom" ).change(function() {
-        var response = [{
+            var response = [{
               "time":"08:00-09:00"},{"time":"09:00-10:00"},{"time":"10:00-11:00"},{
               "time":"11:00-12:00"},{"time":"12:00-13:00"},{"time":"13:00-14:00"},{
               "time":"14:00-15:00"},{"time":"15:00-16:00"},{"time":"16:00-17:00"},{
@@ -200,12 +207,6 @@
                 }
               });
             });*/
-            var fullDate = new Date();
-            var month = fullDate.getMonth()+1;
-            var day = fullDate.getDate();
-            var year = fullDate.getFullYear();
-            var datenow = day+"/"+month+"/"+year;
-            console.log(datenow);
         });
       });
     </script>
