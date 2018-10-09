@@ -212,14 +212,16 @@ app.get('/section', function (req, res) {
 
         //used for test
 	    //var url_path = 'http://www.reg2.nu.ac.th/registrar/class_info_2.asp?backto=room_time&option=1&courseid=16162&classid=352916&acadyear=2561&semester=1';
-    	var url_path ='http://www.reg2.nu.ac.th/registrar/class_info_2.asp?backto=room_time&option=1&courseid=20044&classid=355200&acadyear=2561&semester=1';
-		getUTF8(url_path,function(utf8) {
+    	//var url_path ='http://www.reg2.nu.ac.th/registrar/class_info_2.asp?backto=room_time&option=1&courseid=20044&classid=355200&acadyear=2561&semester=1';
+        var url_path ='http://reg2.nu.ac.th/registrar/class_info_1.asp?printfriendly=1&coursestatus=O00&facultyid=207&maxrow=500&acadyear=2561&semester=1&coursecode=305*&cmd=219&backto=home';
+        getUTF8(url_path,function(utf8) {
 		htmlToJson.parse(utf8, {
-				 'output': ['td', function($tr) {
-					console.log($tr.text());
+				 'output': ['tr', function($tr, $) {
+					console.log($tr.children(0));
 				  
 					   var tmp = {
-						 'text':$tr.text()
+						 'text':$tr.text(),
+                           'id': $tr.children(0).text()
 					   };
 						return tmp;
 
