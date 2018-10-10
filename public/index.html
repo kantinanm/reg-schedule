@@ -91,42 +91,7 @@
 
     <script>
       $(document).ready(function(){
-        var dates = new Date();
-        /*var month = fullDate.getMonth()+1;
-        var day = fullDate.getDate();
-        var year = fullDate.getFullYear();
-        var datenow = day+"-"+month+"-"+year;*/
-        var DateStr = dates.toString();
-        var chkDate = DateStr.substring(0,3);
-        var dateString = [{"day":"Sun"},{"day":"Mon"},{"day":"Tue"},
-                          {"day":"Wed"},{"day":"Thu"},{"day":"Fri"},{"day":"Sat"}];
-        var before=0;
-        var after=0;
-        for(var i=0;i<7;i++){
-          if(chkDate==dateString[i].day){
-            before-=i;
-            after+=(6-i);
-          }
-        }
-
-        function startDate(before) {
-          var dates = new Date();
-          var res = dates.setTime(dates.getTime() + (before * 24 * 60 * 60 * 1000));
-          return new Date(res);
-        }
-
-        var startdate = startDate(before);
-        console.log(startdate);
-
-        function endDate(after) {
-          var dates = new Date();
-          var res = dates.setTime(dates.getTime() + (after * 24 * 60 * 60 * 1000));
-          return new Date(res);
-        }
-
-        var enddate = endDate(after);
-        console.log(enddate);
-
+        //var dates = new Date();
          $("#mydate").datepicker({
            changeYear: true,
            changeMonth: true,
@@ -153,6 +118,34 @@
       });
 
       $( "#cboRoom" ).change(function() {
+            var dates = new Date();
+            var DateStr = dates.toString();
+            var chkDate = DateStr.substring(0,3);
+            var dateString = [{"day":"Sun"},{"day":"Mon"},{"day":"Tue"},
+                              {"day":"Wed"},{"day":"Thu"},{"day":"Fri"},{"day":"Sat"}];
+            var dateShow = [];
+            var before=0;
+            for(var i=0;i<7;i++){
+              if(chkDate==dateString[i].day){
+                before-=i;
+              }
+            }
+
+            function startDate(before) {
+              var dates = new Date();
+              var res = dates.setTime(dates.getTime() + (before * 24 * 60 * 60 * 1000));
+              return new Date(res);
+            }
+
+            for(var i=0;i<7;i++){
+              var numDate = startDate(before);
+              before++;
+              var month = numDate.getMonth()+1;
+              var day = numDate.getDate();
+              var year = numDate.getFullYear();
+              var datenow = day+"/"+month+"/"+year;
+              dateShow.push(datenow);
+            }
             var response = [{
               "time":"08:00-09:00"},{"time":"09:00-10:00"},{"time":"10:00-11:00"},{
               "time":"11:00-12:00"},{"time":"12:00-13:00"},{"time":"13:00-14:00"},{
@@ -208,10 +201,11 @@
                 table_body +='</th>';
               });
                 table_body+='</tr></thead><tbody>';
+              var num=0;
               $.each(dates, function(key, getDate) {
-                table_body +='<tr>';
+                table_body +='<tr align="center">';
                 table_body +='<th>';
-                table_body +=getDate.in_date;
+                table_body +=getDate.in_date+"<br><span style='font-weight:normal;font-size:12px;'>"+dateShow[num]+"</span>";
                 table_body +='</th>';
                 for(var i=chk;i<13;i++){
                   $.each(temp, function(key, val) {
@@ -219,8 +213,10 @@
                       if(val.date==getDate.in_date){
                         if(i==val.col){
                           chk=val.col+parseInt(val.span);
-                          table_body +='<td class="bg-info text-white text-center" colspan="'+val.span+'">';
-                          table_body +='<i class="material-icons" title='+val.code+'>local_offer</i>Have Class';
+                          /*table_body +='<td class="bg-info text-white text-center" colspan="'+val.span+'">';
+                          table_body +='<i class="material-icons">local_offer</i>'+val.code;*/
+                          table_body +='<td class="align-middle" colspan="'+val.span+'">';
+                          table_body +=val.code;
                           table_body +='</td>';
                           return false;
                         }
@@ -234,19 +230,11 @@
                   }
                 }
                 chk=0;
+                num++;
                 table_body +='</tr>';
               });
               table_body+='</tbody>';
             $('#tableDiv').html(table_body);
-
-            //console.log(temp);
-            /*$.each(data, function(key, value) {
-              $.each(value, function(key, val) {
-                if($("#cboRoom option:selected").text()==val.room){
-                  console.log(val.date+" "+val.code+" "+val.start);
-                }
-              });
-            });*/
         });
       });
     </script>
