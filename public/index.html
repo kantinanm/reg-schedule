@@ -115,17 +115,28 @@
       });
       $( "#mydate" ).change(function(){
         /* --------------- if mydate change ------------------*/
-        $.getJSON( "http://localhost:3000/schedule2/"+$("#cboBuilding").val()+"/"+$("#cboRoom").val()+"/2561/1", function( data ) {
-          var myTable = getTable(data,$( "#mydate" ).val());
-          $('#tableDiv').html(myTable);
-        });
+        if($("#cboBuilding").val()=="Choose..."){
+          alert("กรุณาเลือกอาคารเรียนและห้องเรียนก่อนด้วยค่ะ");
+        }else{
+          $.getJSON( "http://localhost:3000/schedule2/"+$("#cboBuilding").val()+"/"+$("#cboRoom").val()+"/2561/1", function( data ) {
+            var myTable = getTable(data,$( "#mydate" ).val());
+            $('#tableDiv').html(myTable);
+          });
+        }
       })
       $( "#cboRoom" ).change(function() {
         /* --------------- if cboRoom change ------------------*/
-        $.getJSON( "http://localhost:3000/schedule2/"+$("#cboBuilding").val()+"/"+$("#cboRoom").val()+"/2561/1", function( data ) {
-          var myTable = getTable(data,null);
-          $('#tableDiv').html(myTable);
-        });
+        if($("#mydate").val()!=""){
+          $.getJSON( "http://localhost:3000/schedule2/"+$("#cboBuilding").val()+"/"+$("#cboRoom").val()+"/2561/1", function( data ) {
+            var myTable = getTable(data,$( "#mydate" ).val());
+            $('#tableDiv').html(myTable);
+          });
+        }else{
+          $.getJSON( "http://localhost:3000/schedule2/"+$("#cboBuilding").val()+"/"+$("#cboRoom").val()+"/2561/1", function( data ) {
+            var myTable = getTable(data,null);
+            $('#tableDiv').html(myTable);
+          });
+        }
       });
 
       function startDate(before) {
@@ -228,7 +239,14 @@
               table_body+='</tr></thead><tbody>';
             var num=0;
             $.each(dates, function(key, getDate) {
-              table_body +='<tr align="center">';
+              var mydate = $('#mydate').val();
+              mydate = mydate.replace(/\b0(?=\d)/g, ''); //trim zero from mydate e.g. 01/10/2018 => 1/10/2018
+
+              if(dateShow[num]==mydate){ 
+                table_body +='<tr align="center" class="bg-light">';
+              }else{
+                table_body +='<tr align="center">';
+              }
               table_body +='<th>';
               table_body +=getDate.in_date+"<br><span style='font-weight:normal;font-size:12px;'>"+dateShow[num]+"</span>";
               table_body +='</th>';
