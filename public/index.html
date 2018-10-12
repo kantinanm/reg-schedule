@@ -177,48 +177,56 @@
 
       $( "#cboEndTime" ).change(function() {
         /* --------------- if cboEndTime change ------------------*/
-        /*if(($("#indate").val()!="Choose...") && ($("#cboBranch").val()!="")){
+        if(($("#indate").val()=="") || ($("#cboBranch").val()=="Choose...")){
           alert("กรุณาใส่วันที่และเลือกสาขาวิชาก่อนด้วยค่ะ");
+          $("#cboEndTime").val("Choose...");
         }else{
-          console.log("OK");
-        }*/
-        var myschedule = [];
-        $.getJSON( "http://localhost:3000/room/"+$("#cboBranch").val(), function( data ) {
-          $.each(data, function(key, value) {
-            if(value.code!="000000"){
-              var res = value.dates;
-              var mapObj = {
-                 SU:"|Sun_",
-                 MO:"|Mon_",
-                 TU:"|Tue_",
-                 WE:"|Wed_",
-                 TH:"|Thu_",
-                 FR:"|Fri_",
-                 SA:"|Sat_"
-              };
-              res = res.replace(/SU|MO|TU|WE|TH|FR|SA/gi, function(matched){
-                return mapObj[matched];
-              });
-              var result = res.split('|');
-              for(var i=0;i<result.length;i++){
-                if(result[i]!=""){
-                  if(result[i].indexOf("EN") == -1){
-                    var chkroom = result[i].split(':50 '); //split room
-                    var onroom = chkroom[1];
-                    var chktime = chkroom[0].split('_'); //split date and time
-                    var ondate = chktime[0];
-                    var intime = chktime[1];
-                    var ontime = intime.split(':00-'); //split time
-                    var sTime = parseInt(ontime[0]);
-                    var eTime = parseInt(ontime[1])+1;
-                    myschedule.push({date:ondate, start:sTime, end:eTime, room:onroom });
+          var myschedule = [];
+          $.getJSON( "http://localhost:3000/room/"+$("#cboBranch").val(), function( data ) {
+            $.each(data, function(key, value) {
+              if(value.code!="000000"){
+                var res = value.dates;
+                var mapObj = {
+                   SU:"|Sun_",
+                   MO:"|Mon_",
+                   TU:"|Tue_",
+                   WE:"|Wed_",
+                   TH:"|Thu_",
+                   FR:"|Fri_",
+                   SA:"|Sat_"
+                };
+                res = res.replace(/SU|MO|TU|WE|TH|FR|SA/gi, function(matched){
+                  return mapObj[matched];
+                });
+                var result = res.split('|');
+                for(var i=0;i<result.length;i++){
+                  if(result[i]!=""){
+                    if(result[i].indexOf("EN") == -1){
+                      var chkroom = result[i].split(':50 '); //split room
+                      var onroom = chkroom[1];
+                      var chktime = chkroom[0].split('_'); //split date and time
+                      var ondate = chktime[0];
+                      var intime = chktime[1];
+                      var ontime = intime.split(':00-'); //split time
+                      var sTime = parseInt(ontime[0]);
+                      var eTime = parseInt(ontime[1])+1;
+                      myschedule.push({date:ondate, start:sTime, end:eTime, room:onroom });
+                    }
                   }
                 }
               }
-            }
+            });
+            //console.log(myschedule);
+            $.each(myschedule, function(key, value) {
+              var date = $("#indate").val().split("/");
+              date = new Date(date[2], date[1] - 1, date[0]);
+              date = date.toString().substring(0,3);
+              if(date == value.date){
+                console.log(value.date+" "+value.start+" "+value.end+" "+value.room);
+              }
+            });
           });
-          console.log(myschedule);
-        });
+        }
       });
 
       $( "#cboBuilding" ).change(function() {
