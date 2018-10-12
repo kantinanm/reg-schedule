@@ -132,6 +132,12 @@
            yearRange: "-100:+20",
          });
          //$("#mydate").datepicker("setDate",dates);
+         $("#indate").datepicker({
+           changeYear: true,
+           changeMonth: true,
+           dateFormat: "dd/m/yy",
+           yearRange: "-100:+20",
+         });
          for(var i=8;i<21;i++){
            if(i<10){
              $('#cboStartTime')
@@ -167,6 +173,52 @@
               .text(j+":00"));
           }
         }
+      });
+
+      $( "#cboEndTime" ).change(function() {
+        /* --------------- if cboEndTime change ------------------*/
+        /*if(($("#indate").val()!="Choose...") && ($("#cboBranch").val()!="")){
+          alert("กรุณาใส่วันที่และเลือกสาขาวิชาก่อนด้วยค่ะ");
+        }else{
+          console.log("OK");
+        }*/
+        var myschedule = [];
+        $.getJSON( "http://localhost:3000/room/"+$("#cboBranch").val(), function( data ) {
+          $.each(data, function(key, value) {
+            if(value.code!="000000"){
+              var res = value.dates;
+              var mapObj = {
+                 SU:"|Sun_",
+                 MO:"|Mon_",
+                 TU:"|Tue_",
+                 WE:"|Wed_",
+                 TH:"|Thu_",
+                 FR:"|Fri_",
+                 SA:"|Sat_"
+              };
+              res = res.replace(/SU|MO|TU|WE|TH|FR|SA/gi, function(matched){
+                return mapObj[matched];
+              });
+              var result = res.split('|');
+              for(var i=0;i<result.length;i++){
+                if(result[i]!=""){
+                  if(result[i].indexOf("EN") == -1){
+                    var chkroom = result[i].split(':50 '); //split room
+                    var onroom = chkroom[1];
+                    var chktime = chkroom[0].split('_'); //split date and time
+                    var ondate = chktime[0];
+                    var intime = chktime[1];
+                    var ontime = intime.split(':00-'); //split time
+                    var sTime = parseInt(ontime[0]);
+                    var eTime = parseInt(ontime[1])+1;
+                    myschedule.push({date:ondate, start:sTime, end:eTime, room:onroom });
+                  }
+                }
+              }
+            }
+          });
+          console.log(myschedule);
+        });
       });
 
       $( "#cboBuilding" ).change(function() {

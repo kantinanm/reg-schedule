@@ -286,12 +286,10 @@ app.get('/room/:section', function (req, res) {
                  datetime="FF";
                  i+=10;
                }
-
-               if(code!="000000"){
-                 var tmpSchedule = {
-                   'code':code,
-                   'dates':datetime
-                 }
+               
+               var tmpSchedule = {
+                 'code':code,
+                 'dates':datetime
                }
                list.push(tmpSchedule);
 					 }
