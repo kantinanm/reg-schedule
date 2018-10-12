@@ -41,7 +41,7 @@
         <div class="row">
           <div class="col-sm">
             <div class="card">
-              <div class="card-header">ค้นหาข้อมูล</div>
+              <div class="card-header">ค้นหาข้อมูลจากห้อง</div>
               <div class="card-body">
                 <form>
                   <div class="form-row">
@@ -62,8 +62,45 @@
                       </select>
                     </div>
                     <div class="form-group col-md-2">
-                      <label for="cboRoom">วันที่</label>
+                      <label for="mydate">วันที่</label>
                       <input class="form-control" id="mydate">
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            <div class="card">
+              <div class="card-header">ค้นหาข้อมูลจากช่วงเวลา</div>
+              <div class="card-body">
+                <form>
+                  <div class="form-row">
+                    <div class="form-group col-md-2">
+                      <label for="indate">วันที่</label>
+                      <input class="form-control" id="indate">
+                    </div>
+                    <div class="form-group col-md-2">
+                      <label for="cboBranch">สาขาวิชา</label>
+                      <select id="cboBranch" class="form-control">
+                        <option selected>Choose...</option>
+                        <option value="305">วิศวกรรมคอมพิวเตอร์</option>
+                        <option value="303">วิศวกรรมไฟฟ้า</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-1">
+                      <label for="cboStartTime">เวลาเริ่มต้น</label>
+                      <select id="cboStartTime" class="form-control">
+                        <option selected>Choose...</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-1">
+                      <label for="cboEndTime">เวลาสิ้นสุด</label>
+                      <select id="cboEndTime" class="form-control">
+                        <option selected>Choose...</option>
+                      </select>
                     </div>
                   </div>
                 </form>
@@ -95,7 +132,43 @@
            yearRange: "-100:+20",
          });
          //$("#mydate").datepicker("setDate",dates);
+         for(var i=8;i<21;i++){
+           if(i<10){
+             $('#cboStartTime')
+             .append($("<option></option>")
+               .attr("value","0"+i+":00")
+               .text("0"+i+":00"));
+           }else{
+             $('#cboStartTime')
+             .append($("<option></option>")
+               .attr("value",i+":00")
+               .text(i+":00"));
+           }
+         }
       });
+
+      $( "#cboStartTime" ).change(function() {
+        /* --------------- if cboStartTime change =>> loop cboEndTime ------------------*/
+        var startTime = $('#cboStartTime').val();
+        startTime = startTime.split(':');
+        var myTime = parseInt(startTime[0])+1;
+        $("#cboEndTime option").remove();
+        $("#cboEndTime").append('<option selected>Choose...</option>');
+        for(var j=myTime;j<22;j++){
+          if(j<10){
+            $('#cboEndTime')
+            .append($("<option></option>")
+              .attr("value","0"+j+":00")
+              .text("0"+j+":00"));
+          }else{
+            $('#cboEndTime')
+            .append($("<option></option>")
+              .attr("value",j+":00")
+              .text(j+":00"));
+          }
+        }
+      });
+
       $( "#cboBuilding" ).change(function() {
         /* --------------- if cboBuilding change ------------------*/
         $("#cboRoom option").remove();
@@ -242,7 +315,7 @@
               var mydate = $('#mydate').val();
               mydate = mydate.replace(/\b0(?=\d)/g, ''); //trim zero from mydate e.g. 01/10/2018 => 1/10/2018
 
-              if(dateShow[num]==mydate){ 
+              if(dateShow[num]==mydate){
                 table_body +='<tr align="center" class="bg-light">';
               }else{
                 table_body +='<tr align="center">';

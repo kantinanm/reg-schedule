@@ -237,8 +237,9 @@ app.get('/section', function (req, res) {
    //console.log(url_path);
 });
 
-app.get('/room', function (req, res) {
-  	var url_path ='http://reg2.nu.ac.th/registrar/class_info_1.asp?printfriendly=1&coursestatus=O00&facultyid=207&maxrow=500&acadyear=2561&semester=1&coursecode=305*&cmd=2&avs685944429=19&backto=home';
+app.get('/room/:section', function (req, res) {
+  	var url_path ='http://reg2.nu.ac.th/registrar/class_info_1.asp?printfriendly=1&coursestatus=O00&facultyid=207';
+        url_path+='&maxrow=500&acadyear=2561&semester=1&coursecode='+req.params.section+'*&cmd=2&avs685944429=19&backto=home';
 		getUTF8(url_path,function(utf8) {
 		htmlToJson.parse(utf8, {
 				 'output': ['td', function($tr) {
@@ -251,46 +252,48 @@ app.get('/room', function (req, res) {
 				 }, function(err, result) {
            var list=[];
            var code,datetime;
-           for(var i=19;i<result.output.length-15;i++) {
-             //if(result.output[i].text.trim() != ""){
-               if(result.output[i].text.trim().substring(0,2) == "SU"){
+           for(var i=22;i<result.output.length-15;i++) {
+               if(result.output[i].text.substring(0,2) == "SU"){
                  code=result.output[i-3].text.trim().substring(0,6);
-                 datetime=result.output[i].text.trim();
+                 datetime=result.output[i].text;
                  i+=10;
-               }else if(result.output[i].text.trim().substring(0,2) == "MO"){
+               }else if(result.output[i].text.substring(0,2) == "MO"){
                  code=result.output[i-3].text.trim().substring(0,6);
-                 datetime=result.output[i].text.trim();
+                 datetime=result.output[i].text;
                  i+=10;
-               }else if(result.output[i].text.trim().substring(0,2) == "TU"){
+               }else if(result.output[i].text.substring(0,2) == "TU"){
                  code=result.output[i-3].text.trim().substring(0,6);
-                 datetime=result.output[i].text.trim();
+                 datetime=result.output[i].text;
                  i+=10;
-               }else if(result.output[i].text.trim().substring(0,2) == "WE"){
+               }else if(result.output[i].text.substring(0,2) == "WE"){
                  code=result.output[i-3].text.trim().substring(0,6);
-                 datetime=result.output[i].text.trim();
+                 datetime=result.output[i].text;
                  i+=10;
-               }else if(result.output[i].text.trim().substring(0,2) == "TH"){
+               }else if(result.output[i].text.substring(0,2) == "TH"){
                  code=result.output[i-3].text.trim().substring(0,6);
-                 datetime=result.output[i].text.trim();
+                 datetime=result.output[i].text;
                  i+=10;
-               }else if(result.output[i].text.trim().substring(0,2) == "FR"){
+               }else if(result.output[i].text.substring(0,2) == "FR"){
                  code=result.output[i-3].text.trim().substring(0,6);
-                 datetime=result.output[i].text.trim();
+                 datetime=result.output[i].text;
                  i+=10;
-               }else if(result.output[i].text.trim().substring(0,2) == "SA"){
+               }else if(result.output[i].text.substring(0,2) == "SA"){
                  code=result.output[i-3].text.trim().substring(0,6);
-                 datetime=result.output[i].text.trim();
+                 datetime=result.output[i].text;
                  i+=10;
-               }else if(result.output[i].text.trim() == ""){
+               }else if(result.output[i].text == ""){
+                 code="000000";
+                 datetime="FF";
                  i+=10;
                }
 
-               var tmpSchedule = {
-                 'code':code,
-                 'dates':datetime
+               if(code!="000000"){
+                 var tmpSchedule = {
+                   'code':code,
+                   'dates':datetime
+                 }
                }
                list.push(tmpSchedule);
-             //}
 					 }
            res.json(list)
 				});
