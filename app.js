@@ -1,7 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var htmlToJson = require('html-to-json');
-var http = require('http'); 
+var http = require('http');
 var util = require('./util');
 var app = express();
 var path = require('path');
@@ -55,7 +55,7 @@ app.get('/db', function (req, res) {
 app.get('/schedule/:building/:room_id/:year/:semeter', async function (req, res) {
     //used for test db
 	 //req.params.building
-	  /*util.getRoomTable(req.params.building,req.params.room_id,req.params.year,req.params.semeter,function(result) {  
+	  /*util.getRoomTable(req.params.building,req.params.room_id,req.params.year,req.params.semeter,function(result) {
 		res.json(result);
 	  });*/
 
@@ -171,13 +171,13 @@ app.get('/section', function (req, res) {
 		htmlToJson.parse(utf8, {
 				 'output': ['td', function($tr) {
 					console.log($tr.text());
-				  
+
 					   var tmp = {
 						 'text':$tr.text()
 					   };
 						return tmp;
 
-				 }] 
+				 }]
 				 }, function(err, result) {
 
 					var aList =[];
@@ -218,14 +218,14 @@ app.get('/section', function (req, res) {
 						 	'text':result.output[i-3].text,
 							'start':result.output[i-2].text,
 							'room':result.output[i-1].text.trim()
-		
+
                           }
-					
+
 							 aList.push(tmpSchedule);
 						} // end if
 
 
-						  
+
 					 } // end for
 
 					 console.log(aList);
@@ -235,6 +235,66 @@ app.get('/section', function (req, res) {
 		  });
 
    //console.log(url_path);
+});
+
+app.get('/room', function (req, res) {
+  	var url_path ='http://reg2.nu.ac.th/registrar/class_info_1.asp?printfriendly=1&coursestatus=O00&facultyid=207&maxrow=500&acadyear=2561&semester=1&coursecode=305*&cmd=2&avs685944429=19&backto=home';
+		getUTF8(url_path,function(utf8) {
+		htmlToJson.parse(utf8, {
+				 'output': ['td', function($tr) {
+					//console.log($tr.text());
+					   var tmp = {
+						 'text':$tr.text()
+					   };
+						return tmp;
+				 }]
+				 }, function(err, result) {
+           var list=[];
+           var code,datetime;
+           for(var i=19;i<result.output.length-15;i++) {
+             //if(result.output[i].text.trim() != ""){
+               if(result.output[i].text.trim().substring(0,2) == "SU"){
+                 code=result.output[i-3].text.trim().substring(0,6);
+                 datetime=result.output[i].text.trim();
+                 i+=10;
+               }else if(result.output[i].text.trim().substring(0,2) == "MO"){
+                 code=result.output[i-3].text.trim().substring(0,6);
+                 datetime=result.output[i].text.trim();
+                 i+=10;
+               }else if(result.output[i].text.trim().substring(0,2) == "TU"){
+                 code=result.output[i-3].text.trim().substring(0,6);
+                 datetime=result.output[i].text.trim();
+                 i+=10;
+               }else if(result.output[i].text.trim().substring(0,2) == "WE"){
+                 code=result.output[i-3].text.trim().substring(0,6);
+                 datetime=result.output[i].text.trim();
+                 i+=10;
+               }else if(result.output[i].text.trim().substring(0,2) == "TH"){
+                 code=result.output[i-3].text.trim().substring(0,6);
+                 datetime=result.output[i].text.trim();
+                 i+=10;
+               }else if(result.output[i].text.trim().substring(0,2) == "FR"){
+                 code=result.output[i-3].text.trim().substring(0,6);
+                 datetime=result.output[i].text.trim();
+                 i+=10;
+               }else if(result.output[i].text.trim().substring(0,2) == "SA"){
+                 code=result.output[i-3].text.trim().substring(0,6);
+                 datetime=result.output[i].text.trim();
+                 i+=10;
+               }else if(result.output[i].text.trim() == ""){
+                 i+=10;
+               }
+
+               var tmpSchedule = {
+                 'code':code,
+                 'dates':datetime
+               }
+               list.push(tmpSchedule);
+             //}
+					 }
+           res.json(list)
+				});
+		  });
 });
 
 var getUTF8 = function(url_path,cb) {
