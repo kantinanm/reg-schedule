@@ -210,21 +210,53 @@
                       var ontime = intime.split(':00-'); //split time
                       var sTime = parseInt(ontime[0]);
                       var eTime = parseInt(ontime[1])+1;
-                      myschedule.push({date:ondate, start:sTime, end:eTime, room:onroom });
+                      myschedule.push({code:value.code, date:ondate, start:sTime, end:eTime, room:onroom });
                     }
                   }
                 }
               }
             });
-            //console.log(myschedule);
+            console.log(myschedule);
+            var stime = $("#cboStartTime").val().split(":");
+            stime = parseInt(stime[0]);
+            var etime = $("#cboEndTime").val().split(":");
+            etime = parseInt(etime[0]);
+            var isroom=[];
+            var onroom=[];
             $.each(myschedule, function(key, value) {
               var date = $("#indate").val().split("/");
               date = new Date(date[2], date[1] - 1, date[0]);
               date = date.toString().substring(0,3);
               if(date == value.date){
-                console.log(value.date+" "+value.start+" "+value.end+" "+value.room);
+                //console.log(value.date+" "+value.start+" "+value.end+" "+value.room+" "+stime+" "+etime);
+                for(var i=value.start;i<=value.end;i++){
+                  if((i>=stime) && (i<etime)){
+                    onroom.push({onroom:value.room});
+                    //console.log(value.room+" have class");
+                    break;
+                  }else{
+                    isroom.push({onroom:value.room});
+                    //table_body +='<td>'+value.room+'</td>';
+                    //console.log(value.room+" OK!");
+                    break;
+                  }
+                }
               }
             });
+                //console.log(onroom);
+                //console.log(isroom);
+            /*var table_body ='<table class="table table-bordered" id="example"><tbody>';
+                table_body +='<tr><th>Room</th>';
+                $.each(isroom, function(key, value) {
+                  $.each(onroom, function(key, val) {
+                    if(value.onroom != val.onroom){
+                      table_body +='<td>'+value.onroom+'</td>';
+                      return false;
+                    }
+                  });
+                });
+                table_body +='</tr></tbody></table>';
+                $('#tableDiv').html(table_body);*/
           });
         }
       });
@@ -407,7 +439,7 @@
               num++;
               table_body +='</tr>';
             });
-            table_body+='</tbody>';
+            table_body+='</tbody></table>';
           return table_body;
         }
     </script>
