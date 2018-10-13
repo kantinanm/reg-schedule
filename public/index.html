@@ -83,11 +83,13 @@
                       <input class="form-control" id="indate">
                     </div>
                     <div class="form-group col-md-2">
-                      <label for="cboBranch">สาขาวิชา</label>
+                      <label for="cboBranch">อาคารเรียน</label>
                       <select id="cboBranch" class="form-control">
                         <option selected>Choose...</option>
-                        <option value="305">วิศวกรรมคอมพิวเตอร์</option>
-                        <option value="303">วิศวกรรมไฟฟ้า</option>
+                        <option value="303/305">EE</option>
+                        <option value="000/000">EN</option>
+                        <option value="301/302">IE</option>
+                        <option value="304/307">CE</option>
                       </select>
                     </div>
                     <div class="form-group col-md-1">
@@ -182,49 +184,55 @@
           $("#cboEndTime").val("Choose...");
         }else{
           var myschedule = [];
-          $.getJSON( "http://localhost:3000/room/"+$("#cboBranch").val(), function( data ) {
+          $.getJSON( "http://localhost:3000/room", function( data ) {
+            var chkBranch = $("#cboBranch").val().split("/");
             $.each(data, function(key, value) {
               if(value.code!="000000"){
-                var res = value.dates;
-                var mapObj = {
-                   SU:"|Sun_",
-                   MO:"|Mon_",
-                   TU:"|Tue_",
-                   WE:"|Wed_",
-                   TH:"|Thu_",
-                   FR:"|Fri_",
-                   SA:"|Sat_"
-                };
-                res = res.replace(/SU|MO|TU|WE|TH|FR|SA/gi, function(matched){
-                  return mapObj[matched];
-                });
-                var result = res.split('|');
-                //console.log(result);
-                for(var i=0;i<result.length;i++){
-                  if(result[i]!=""){
-                    if(result[i].indexOf("EN") == -1){
-                      var chkroom = result[i].split('0 '); //split room
-                      var onroom = chkroom[1];
-                      var chktime = chkroom[0].split('_'); //split date and time
-                      var ondate = chktime[0];
-                      var intime = chktime[1];
-                      var ontime = intime.split(':00-'); //split time
-                      var sTime = parseInt(ontime[0]);
-                      var spTime = ontime[1].split(':');
-                      var eTime = "";
-                      if(spTime[1]=="5"){
-                        eTime = parseInt(spTime[0])+1;
-                      }else{
-                        eTime = parseInt(spTime[0]);
+                var chkCode = value.code.substring(0,3);
+                if((chkCode==chkBranch[0]) || (chkCode==chkBranch[1])){
+                  var res = value.dates;
+                  var mapObj = {
+                     SU:"|Sun_",
+                     MO:"|Mon_",
+                     TU:"|Tue_",
+                     WE:"|Wed_",
+                     TH:"|Thu_",
+                     FR:"|Fri_",
+                     SA:"|Sat_"
+                  };
+                  res = res.replace(/SU|MO|TU|WE|TH|FR|SA/gi, function(matched){
+                    return mapObj[matched];
+                  });
+                  var result = res.split('|');
+                  //console.log(result);
+                  for(var i=0;i<result.length;i++){
+                    if(result[i]!=""){
+                      if(result[i].indexOf("EN") == -1){
+                        var chkroom = result[i].split('0 '); //split room
+                        var onroom = chkroom[1];
+                        var chktime = chkroom[0].split('_'); //split date and time
+                        var ondate = chktime[0];
+                        var intime = chktime[1];
+                        var ontime = intime.split(':00-'); //split time
+                        var sTime = parseInt(ontime[0]);
+                        var spTime = ontime[1].split(':');
+                        var eTime = "";
+                        if(spTime[1]=="5"){
+                          eTime = parseInt(spTime[0])+1;
+                        }else{
+                          eTime = parseInt(spTime[0]);
+                        }
+                        var spans = eTime-sTime;
+                        if(onroom !== "ติดต่อผู้สอน"){
+                          myschedule.push({code:value.code, date:ondate, start:sTime, end:eTime, room:onroom, spans:spans });
+                        }
                       }
-                      var spans = eTime-sTime;
-                      myschedule.push({code:value.code, date:ondate, start:sTime, end:eTime, room:onroom, spans:spans });
                     }
                   }
                 }
               }
             });
-            console.log(myschedule);
+            //console.log(myschedule);
             var stime = $("#cboStartTime").val().split(":");
             stime = parseInt(stime[0]);
             var etime = $("#cboEndTime").val().split(":");
@@ -244,27 +252,51 @@
                     break;
                   }else{
                     isroom.push({onroom:value.room});
-                    //table_body +='<td>'+value.room+'</td>';
                     //console.log(value.room+" OK!");
                     break;
                   }
                 }
               }
             });
-                //console.log(onroom);
-                //console.log(isroom);
-            /*var table_body ='<table class="table table-bordered" id="example"><tbody>';
-                table_body +='<tr><th>Room</th>';
-                $.each(isroom, function(key, value) {
-                  $.each(onroom, function(key, val) {
-                    if(value.onroom != val.onroom){
-                      table_body +='<td>'+value.onroom+'</td>';
-                      return false;
+              //console.log(onroom);
+              //console.log(isroom);
+              /*-----------------  function uniqueOnRoom --------------------*/
+              function uniqueArr(arr){
+                var tempArr = [],
+                    uniqueRoom = [];
+
+                $.each(arr, function (index, value) {
+                    if ($.inArray(value.onroom, tempArr) === -1) {
+                        tempArr.push(value.onroom);
+                        uniqueRoom.push(value);
                     }
-                  });
                 });
+                return uniqueRoom;
+              }
+              var a = uniqueArr(onroom);
+              var b = uniqueArr(isroom);
+              //console.log(a);
+              //console.log(b);
+              function comparer(otherArray){
+                return function(current){
+                  return otherArray.filter(function(other){
+                    return other.onroom == current.onroom
+                  }).length == 0;
+                }
+              }
+
+              //var onlyInA = a.filter(comparer(b));
+              var onlyInB = b.filter(comparer(a));
+              //result = onlyInA.concat(onlyInB);
+              //console.log(onlyInB);
+
+            var table_body ='<table class="table table-bordered" id="example"><tbody>';
+                table_body +='<tr><th>Room</th>';
+                  $.each(onlyInB, function(key, val) {
+                      table_body +='<td>'+val.onroom+'</td>';
+                  });
                 table_body +='</tr></tbody></table>';
-                $('#tableDiv').html(table_body);*/
+                $('#tableDiv').html(table_body);
           });
         }
       });

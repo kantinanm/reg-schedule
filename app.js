@@ -237,9 +237,11 @@ app.get('/section', function (req, res) {
    //console.log(url_path);
 });
 
-app.get('/room/:section', function (req, res) {
+//app.get('/room/:section', function (req, res) {
+app.get('/room', function (req, res) {
   	var url_path ='http://reg2.nu.ac.th/registrar/class_info_1.asp?printfriendly=1&coursestatus=O00&facultyid=207';
-        url_path+='&maxrow=500&acadyear=2561&semester=1&coursecode='+req.params.section+'*&cmd=2&avs685944429=19&backto=home';
+        url_path+='&maxrow=500&acadyear=2561&semester=1&coursecode=&cmd=2&avs685944429=19&backto=home';
+        //url_path+='&maxrow=500&acadyear=2561&semester=1&coursecode='+req.params.section+'*&cmd=2&avs685944429=19&backto=home';
 		getUTF8(url_path,function(utf8) {
 		htmlToJson.parse(utf8, {
 				 'output': ['td', function($tr) {
@@ -286,7 +288,7 @@ app.get('/room/:section', function (req, res) {
                  datetime="FF";
                  i+=10;
                }
-               
+
                var tmpSchedule = {
                  'code':code,
                  'dates':datetime
