@@ -113,10 +113,17 @@
         <div class="row">
             <div class="col-sm">
               <div class="card">
-                <div class="card-header">ตารางการใช้ห้องเรียน</div>
+                <div class="card-header">ค้นหาจากห้องเรียน</div>
                 <div class="card-body">
-                    <div id="tableDiv">
-                    </div>
+                  <div id="tableDiv">
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header">ค้นหาจากช่วงเวลา</div>
+                <div class="card-body">
+                  <div id="tableTime">
+                  </div>
                 </div>
               </div>
             </div>
@@ -223,7 +230,7 @@
                           eTime = parseInt(spTime[0]);
                         }
                         var spans = eTime-sTime;
-                        if(onroom !== "ติดต่อผู้สอน"){
+                        if((onroom !== "ติดต่อผู้สอน") && (onroom !== "EE 609")){
                           myschedule.push({code:value.code, date:ondate, start:sTime, end:eTime, room:onroom, spans:spans });
                         }
                       }
@@ -275,8 +282,7 @@
               }
               var a = uniqueArr(onroom);
               var b = uniqueArr(isroom);
-              //console.log(a);
-              //console.log(b);
+
               function comparer(otherArray){
                 return function(current){
                   return otherArray.filter(function(other){
@@ -284,19 +290,27 @@
                   }).length == 0;
                 }
               }
-
-              //var onlyInA = a.filter(comparer(b));
               var onlyInB = b.filter(comparer(a));
-              //result = onlyInA.concat(onlyInB);
-              //console.log(onlyInB);
-
-            var table_body ='<table class="table table-bordered" id="example"><tbody>';
-                table_body +='<tr><th>Room</th>';
-                  $.each(onlyInB, function(key, val) {
-                      table_body +='<td>'+val.onroom+'</td>';
-                  });
-                table_body +='</tr></tbody></table>';
-                $('#tableDiv').html(table_body);
+              var c=[];
+              $.getJSON( "http://localhost:3000/building/"+$("#cboBranch option:selected").text(), function( res ) {
+                $.each(res, function(key, value) {
+                  var result = value.title.split('ความจุ : ');
+                  var text = value.title.split(' ประเภท');
+                  if(result[1].substring(0,1) != 0){
+                    c.push({onroom:text[0]});
+                  }
+                });
+              var onlyInA = c.filter(comparer(a));
+              onlyInA = onlyInA.filter(comparer(b));
+              var result = onlyInA.concat(onlyInB);
+              var table_body ='<table class="table table-bordered" id="example"><tbody>';
+                  table_body +='<tr><th>Room</th>';
+                    $.each(result, function(key, val) {
+                        table_body +='<td>'+val.onroom+'</td>';
+                    });
+                  table_body +='</tr></tbody></table>';
+                  $('#tableTime').html(table_body);
+              });
           });
         }
       });
