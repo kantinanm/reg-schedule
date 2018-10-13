@@ -199,18 +199,26 @@
                   return mapObj[matched];
                 });
                 var result = res.split('|');
+                //console.log(result);
                 for(var i=0;i<result.length;i++){
                   if(result[i]!=""){
                     if(result[i].indexOf("EN") == -1){
-                      var chkroom = result[i].split(':50 '); //split room
+                      var chkroom = result[i].split('0 '); //split room
                       var onroom = chkroom[1];
                       var chktime = chkroom[0].split('_'); //split date and time
                       var ondate = chktime[0];
                       var intime = chktime[1];
                       var ontime = intime.split(':00-'); //split time
                       var sTime = parseInt(ontime[0]);
-                      var eTime = parseInt(ontime[1])+1;
-                      myschedule.push({code:value.code, date:ondate, start:sTime, end:eTime, room:onroom });
+                      var spTime = ontime[1].split(':');
+                      var eTime = "";
+                      if(spTime[1]=="5"){
+                        eTime = parseInt(spTime[0])+1;
+                      }else{
+                        eTime = parseInt(spTime[0]);
+                      }
+                      var spans = eTime-sTime;
+                      myschedule.push({code:value.code, date:ondate, start:sTime, end:eTime, room:onroom, spans:spans });
                     }
                   }
                 }
