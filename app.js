@@ -20,7 +20,15 @@ db.on('connect', function () {
     console.log('database connected')
 });
 
+var execPHP = require('./execphp.js')();
+execPHP.phpFolder = '.\\public\\phpfiles\\';
 
+app.use('*.php',function(request,response,next) {
+	execPHP.parseFile(request.originalUrl,function(phpResult) {
+		response.write(phpResult);
+		response.end();
+	});
+});
 
 app.use(bodyParser.json());
 app.use("/public", express.static(__dirname + "/public"));
