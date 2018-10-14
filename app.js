@@ -27,7 +27,7 @@ app.use("/public", express.static(__dirname + "/public"));
 app.set("view engine", "ejs");
 
 app.get('/', function(req, res) {
-    res.sendFile('public/index.html', { root: __dirname });
+    res.sendFile('public/schedule.html', { root: __dirname });
 });
 
 
