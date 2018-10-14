@@ -192,7 +192,7 @@
           $("#cboEndTime").val("Choose..."); //หากยังไม่มีการกำหนดค่าใน indate และ cboBranch ให้ cboEndTime selected ที่ Choose...
         }else{
           $.getJSON( "http://localhost:3000/room", function( data ) { //get json data จาก /room
-            var myschedule = getSchedule(data);
+            var myschedule = getSchedule(data,"time");
             //console.log(myschedule);
             var stime = $("#cboStartTime").val().split(":");
             stime = parseInt(stime[0]);
@@ -203,22 +203,22 @@
             $.each(myschedule, function(key, value) {
               var date = $("#indate").val().split("/");
               date = new Date(date[2], date[1] - 1, date[0]);
-              date = date.toString().substring(0,3);
+              date = date.toString().substring(0,3); //ตัดเอาเฉพาะ 3 ตัวอักษรแรกใน date เช่น Thu
               if(date == value.date){
-                for(var i=value.start;i<=value.end;i++){
-                  if((i>=stime) && (i<etime)){
-                    onroom.push({onroom:value.room});
-                    break;
+                for(var i=value.start;i<=value.end;i++){ //เช็คตั้งแต่เวลาเริ่มต้น ถึงสิ้นสุดใน reg เช่น start 9 end 11
+                  if((i>=stime) && (i<etime)){ //ถ้าเวลาเริ่มต้นใน reg มากกว่าหรือเท่ากับเวลาเริ่มต้นของเวลาที่ต้องการจองห้อง และน้อยกว่าเวลาสิ้นสุดในการจองห้อง เช่น เวลาที่ต้องการจองคือ 8:00-10:00
+                    onroom.push({onroom:value.room}); //ให้ push ห้องลงใน onroom หมายถึงห้องที่มีการเรียนการสอนใน reg
+                    break; //เมื่อพบแล้วออกจาก loop เลยไม่ต้องค้นหาต่อ
                   }else{
-                    isroom.push({onroom:value.room});
+                    isroom.push({onroom:value.room}); //กรณีที่ไม่พบ ให้ push ลง isroom คือห้องที่ไม่มีการเรียนการสอนใน reg
                     break;
                   }
                 }
               }
             });
-            var a = uniqueArr(onroom); //ห้องที่มีการเรียนการสอน เช่น [{onroom:"EE 113"}, {onroom:"EE 106"}]
-            var b = uniqueArr(isroom); //ห้องที่ไม่มีการเรียนการสอน เช่น [{onroom:"EE 113"}, {onroom:"EE 606"}]
-            var onlyInB = b.filter(comparer(a)); //ตัดห้องที่มีการเรียนการสอนออกจากห้องที่ไม่มีการเรียนการสอน เช่น [{onroom:"EE 606"}]
+            var a = uniqueArr(onroom); //ตัดค่าซ้ำในห้องที่มีการเรียนการสอน เช่น [{onroom:"EE 113"}, {onroom:"EE 113"}] => [{onroom:"EE 113"}]
+            var b = uniqueArr(isroom); //ตัดค่าซ้ำห้องที่ไม่มีการเรียนการสอน
+            var onlyInB = b.filter(comparer(a)); //ตัดห้องที่มีการเรียนการสอนออกจากห้องที่ไม่มีการเรียนการสอน เช่น a มี [{onroom:"EE 113"}, {onroom:"EE 106"}], b มี [{onroom:"EE 113"}, {onroom:"EE 606"}] จะได้ [{onroom:"EE 606"}]
             $.getJSON( "http://localhost:3000/building/"+$("#cboBranch option:selected").text(), function( res ) {
               var onlyInC=[];
               $.each(res, function(key, value) { //หาห้องที่มีทั้งหมด
@@ -248,7 +248,7 @@
         $("#cboRoom option").remove();
         $("#cboRoom").append('<option selected>Choose...</option>');
         $.getJSON( "http://localhost:3000/building/"+$("#cboBuilding").val(), function( data ) {
-          if($("#cboBuilding").val() === "EE"){ //ถ้า cboBuilding เท่ากับ EE ให้เพิ่มห้อง EE 315 
+          if($("#cboBuilding").val() === "EE"){ //ถ้า cboBuilding เท่ากับ EE ให้เพิ่มห้อง EE 315
             $('#cboRoom')
             .append($("<option></option>")
               .attr("value","0000")
@@ -265,6 +265,51 @@
             }
           });
         });
+      });
+
+      $( "#mydate" ).change(function(){
+        /* --------------- เมื่อเลือกวันที่ในการค้นหาแบบห้องเรียน ------------------*/
+        if($("#cboBuilding").val()=="Choose..."){
+          alert("กรุณาเลือกอาคารเรียนและห้องเรียนก่อนด้วยค่ะ");
+        }else{
+          $.getJSON( "http://localhost:3000/room", function( data ) {
+            var myschedule = getSchedule(data,"room");
+            myschedule.sort(function(a,b){  //เรียงเวลาใน json ใหม่จากน้อยไปมาก
+               if(a.start > b.start){ return 1}
+                if(a.start < b.start){ return -1}
+                  return 0;
+            });
+            var myTable = getTable(myschedule,$( "#mydate" ).val());
+            $('#tableDiv').html(myTable);
+          });
+        }
+      });
+
+      $( "#cboRoom" ).change(function() {
+        /* --------------- เมื่อ cboRoom มีการเปลี่ยนแปลงจากการค้นหาแบบห้องเรียน ------------------*/
+        if($("#mydate").val()!=""){
+          $.getJSON( "http://localhost:3000/room", function( data ) {
+            var myschedule = getSchedule(data,"room");
+            myschedule.sort(function(a,b){  //เรียงเวลาใน json ใหม่จากน้อยไปมาก
+               if(a.start > b.start){ return 1}
+                if(a.start < b.start){ return -1}
+                  return 0;
+            });
+            var myTable = getTable(myschedule,$( "#mydate" ).val());
+            $('#tableDiv').html(myTable);
+          });
+        }else{
+          $.getJSON( "http://localhost:3000/room", function( data ) {
+            var myschedule = getSchedule(data,"room");
+            myschedule.sort(function(a,b){  //เรียงเวลาใน json ใหม่จากน้อยไปมาก
+               if(a.start > b.start){ return 1}
+                if(a.start < b.start){ return -1}
+                  return 0;
+            });
+            var myTable = getTable(myschedule,null);
+            $('#tableDiv').html(myTable);
+          });
+        }
       });
     </script>
   </body>

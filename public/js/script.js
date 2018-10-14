@@ -1,6 +1,22 @@
-function getSchedule(data){
+function getSchedule(data,chk){
   var myschedule = [];
-  var chkBranch = $("#cboBranch").val().split("/"); //split ค่าใน cboBranch จาก "/"
+  var chkBranch;
+  if(chk === "room"){ //เช็คว่าค้นหาจากห้องเรียนหรือเวลา ถ้าเท่ากับ room แสดงว่าค้นจากห้องเรียน
+    var codeRoom;
+    if($("#cboBuilding").val()==="EE"){
+      codeRoom="303/305";
+    }else if($("#cboBuilding").val()==="EN"){
+      codeRoom="000/000";
+    }else if($("#cboBuilding").val()==="IE"){
+      codeRoom="301/302";
+    }else{
+      codeRoom="304/307";
+    }
+    chkBranch = codeRoom.split("/");
+  }else{ //ถ้าไม่ใช่แสดงว่าค้นจากเวลา
+    chkBranch = $("#cboBranch").val().split("/"); //split ค่าใน cboBranch จาก "/"
+  }
+  //var chkBranch = $("#cboBranch").val().split("/"); //split ค่าใน cboBranch จาก "/"
   $.each(data, function(key, value) {
     if(value.code!="000000"){ //ถ้า รหัสวิชาไม่เท่ากับ "000000"
       var chkCode = value.code.substring(0,3); //เช็คค่ารหัสวิชา 3 ตัวแรก"
@@ -37,8 +53,22 @@ function getSchedule(data){
                 eTime = parseInt(spTime[0]);
               }
               var spans = eTime-sTime;
+              var index;
+              if(sTime==8){ index=0;
+              }else if(sTime==9){ index=1;
+              }else if(sTime==10){ index=2;
+              }else if(sTime==11){ index=3;
+              }else if(sTime==12){ index=4;
+              }else if(sTime==13){ index=5;
+              }else if(sTime==14){ index=6;
+              }else if(sTime==15){ index=7;
+              }else if(sTime==16){ index=8;
+              }else if(sTime==17){ index=9;
+              }else if(sTime==18){ index=10;
+              }else if(sTime==19){ index=11;
+              }else {index=12;}
               if((onroom !== "ติดต่อผู้สอน") && (onroom !== "EE 609")){ //ตัดกรณีที่ room เป็น ติอต่อผู้สอน หรือ ห้องที่ไม่ได้ใช้ในการเรียนการสอน
-                myschedule.push({code:value.code, date:ondate, start:sTime, end:eTime, room:onroom, spans:spans });
+                myschedule.push({code:value.code, date:ondate, start:sTime, end:eTime, room:onroom, span:spans, col:index });
               }
             }
           }
@@ -71,3 +101,111 @@ function comparer(otherArray){
     }).length == 0;
   }
 }
+
+function startDate(before) {
+  /* --------------- function find week เพื่อแสดงวันที่ใน table ------------------*/
+  var dates = new Date();
+  var dateSearch = $('#mydate').val();
+  if($.trim(dateSearch) == ''){
+    dates = dates;
+  }else{
+    var res = dateSearch.split("/")
+    dates = new Date(res[2], res[1] - 1, res[0])
+  }
+  var res = dates.setTime(dates.getTime() + (before * 24 * 60 * 60 * 1000));
+  return new Date(res);
+}
+
+function getTable(data,dateSearch){
+  /* --------------- function create table ------------------*/
+  var dates = new Date();
+  if(dateSearch == null){ //-----------if mydate is null ---------------
+    dates = dates;
+  }else{
+    var res = dateSearch.split("/")
+    dates = new Date(res[2], res[1] - 1, res[0])
+  }
+  var DateStr = dates.toString();
+  var chkDate = DateStr.substring(0,3);
+  var dateString = [{"day":"Sun"},{"day":"Mon"},{"day":"Tue"},
+                    {"day":"Wed"},{"day":"Thu"},{"day":"Fri"},{"day":"Sat"}];
+  var dateShow = [];
+  var before=0;
+  for(var i=0;i<7;i++){
+    if(chkDate==dateString[i].day){
+      before-=i;
+    }
+  }
+  for(var i=0;i<7;i++){
+    var numDate = startDate(before);
+    before++;
+    var month = numDate.getMonth()+1;
+    var day = numDate.getDate();
+    var year = numDate.getFullYear();
+    var datenow = day+"/"+month+"/"+year;
+    dateShow.push(datenow);
+  }
+
+  var response = [{
+    "time":"08:00-09:00"},{"time":"09:00-10:00"},{"time":"10:00-11:00"},{
+    "time":"11:00-12:00"},{"time":"12:00-13:00"},{"time":"13:00-14:00"},{
+    "time":"14:00-15:00"},{"time":"15:00-16:00"},{"time":"16:00-17:00"},{
+    "time":"17:00-18:00"},{"time":"18:00-19:00"},{"time":"19:00-20:00"},{
+    "time":"20:00-21:00"
+  }];
+  var dates = [{
+    "in_date":"Sun"},{"in_date":"Mon"},{
+    "in_date":"Tue"},{"in_date":"Wed"},{
+    "in_date":"Thu"},{"in_date":"Fri"},{
+    "in_date":"Sat"
+  }];
+
+  var chk=0;
+  var table_body ='<table class="table table-bordered" id="example"><thead>';
+      table_body +='<tr><th>Date/Time</th>';
+      $.each(response, function(key, getTime) {
+        table_body +='<th>';
+        table_body +=getTime.time;
+        table_body +='</th>';
+      });
+        table_body+='</tr></thead><tbody>';
+      var num=0;
+      $.each(dates, function(key, getDate) {
+        var mydate = $('#mydate').val();
+        mydate = mydate.replace(/\b0(?=\d)/g, ''); //trim zero from mydate e.g. 01/10/2018 => 1/10/2018
+
+        if(dateShow[num]==mydate){
+          table_body +='<tr align="center" class="bg-light">';
+        }else{
+          table_body +='<tr align="center">';
+        }
+        table_body +='<th>';
+        table_body +=getDate.in_date+"<br><span style='font-weight:normal;font-size:12px;'>"+dateShow[num]+"</span>";
+        table_body +='</th>';
+        for(var i=chk;i<13;i++){
+          $.each(data, function(key, val) {
+            if($("#cboRoom option:selected").text()==val.room){
+              if(val.date==getDate.in_date){
+                if(i==val.col){
+                  chk=val.col+parseInt(val.span);
+                  table_body +='<td class="align-middle" colspan="'+val.span+'">';
+                  table_body +=val.code;
+                  table_body +='</td>';
+                  return false;
+                }
+              }
+            }
+          });
+          if(i>=chk){
+            table_body +='<td>';
+            table_body +='';
+            table_body +='</td>';
+          }
+        }
+        chk=0;
+        num++;
+        table_body +='</tr>';
+      });
+      table_body+='</tbody></table>';
+      return table_body;
+  }
