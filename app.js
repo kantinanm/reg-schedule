@@ -31,6 +31,30 @@ app.use('*.php',function(request,response,next) {
 	});
 });
 
+var ldap = require('ldapjs');
+
+function authDN(dn, password, cb) {
+  var client = ldap.createClient({url: 'ldap://dc-03-svr'});
+
+  client.bind(dn, password, function (err) {
+    client.unbind();
+    cb(err === null, err);
+  });
+}
+
+function output(res, err) {
+  if (res) {
+    console.log('success');
+  } else {
+    console.log('failure');
+  }
+}
+
+// should print "success"
+authDN('cn=user', 'goodpasswd', output);
+// should print "failure"
+authDN('cn=user', 'badpasswd', output);
+
 app.get("/login/:usr/:pwd",function(req,res){
   var opt ={
       'username':req.params.usr,
