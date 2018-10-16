@@ -6,6 +6,7 @@ var util = require('./util');
 var app = express();
 var path = require('path');
 var iconv = require('iconv-lite');
+var condb = require('./db/connectdb');
 //var public = path.join(__dirname, 'public');
 const isNumber = require('is-number');
 
@@ -30,12 +31,22 @@ app.use('*.php',function(request,response,next) {
 	});
 });
 
+app.get("/login/:usr/:pwd",function(req,res){
+  var opt ={
+      'username':req.params.usr,
+      'password':req.params.pwd,
+  }
+  condb.chklogin(opt,function(result) {
+    res.json(result);
+	});
+});
+
 app.use(bodyParser.json());
 app.use("/public", express.static(__dirname + "/public"));
 app.set("view engine", "ejs");
 
 app.get('/', function(req, res) {
-    res.sendFile('public/schedule.html', { root: __dirname });
+    res.sendFile('public/index.html', { root: __dirname });
 });
 
 

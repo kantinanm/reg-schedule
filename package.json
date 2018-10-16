@@ -22,7 +22,9 @@
     "http": "0.0.0",
     "iconv-lite": "^0.4.24",
     "is-number": "^7.0.0",
+    "ldapjs": "^1.0.2",
     "mongojs": "^2.6.0",
+    "mysql": "^2.16.0",
     "nodemon": "^1.18.4",
     "path": "^0.12.7",
     "querystring": "^0.2.0"

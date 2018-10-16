@@ -21,6 +21,10 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link href="https://fonts.googleapis.com/css?family=Mali" rel="stylesheet">
+
+    <!-- myscript -->
+    <script src="public/js/script.js"></script>
+
     <title>ระบบจองห้องเรียนออนไลน์</title>
     <style>
       body{
@@ -35,6 +39,11 @@
             <i class="material-icons">computer</i>
             ระบบจองห้องเรียนออนไลน์
           </a>
+          <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="text" placeholder="Username" name="txtUsr" id="txtUsr">
+            <input class="form-control mr-sm-2" type="password" placeholder="Password" name="txtPwd" id="txtPwd">
+            <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit" onclick='chkLogin()'>เข้าสู่ระบบ</button>
+          </form>
         </nav>
         <div class="row">
         </div>
@@ -72,57 +81,11 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-sm">
-            <div class="card">
-              <div class="card-header">ค้นหาข้อมูลจากช่วงเวลา</div>
-              <div class="card-body">
-                <form>
-                  <div class="form-row">
-                    <div class="form-group col-md-2">
-                      <label for="indate">วันที่</label>
-                      <input class="form-control" id="indate">
-                    </div>
-                    <div class="form-group col-md-2">
-                      <label for="cboBranch">อาคารเรียน</label>
-                      <select id="cboBranch" class="form-control">
-                        <option selected>Choose...</option>
-                        <option value="303/305">EE</option>
-                        <option value="000/000">EN</option>
-                        <option value="301/302">IE</option>
-                        <option value="304/307">CE</option>
-                      </select>
-                    </div>
-                    <div class="form-group col-md-1">
-                      <label for="cboStartTime">เวลาเริ่มต้น</label>
-                      <select id="cboStartTime" class="form-control">
-                        <option selected>Choose...</option>
-                      </select>
-                    </div>
-                    <div class="form-group col-md-1">
-                      <label for="cboEndTime">เวลาสิ้นสุด</label>
-                      <select id="cboEndTime" class="form-control">
-                        <option selected>Choose...</option>
-                      </select>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
             <div class="col-sm">
               <div class="card">
-                <div class="card-header">ค้นหาจากห้องเรียน</div>
+                <div class="card-header">ตารางการใช้ห้องเรียน</div>
                 <div class="card-body">
                   <div id="tableDiv">
-                  </div>
-                </div>
-              </div>
-              <div class="card">
-                <div class="card-header">ค้นหาจากช่วงเวลา</div>
-                <div class="card-body">
-                  <div id="tableTime">
                   </div>
                 </div>
               </div>
@@ -132,194 +95,25 @@
 
     <script>
       $(document).ready(function(){
-        /* ------------- page load --------------*/
-        //var dates = new Date();
          $("#mydate").datepicker({
            changeYear: true,
            changeMonth: true,
            dateFormat: "dd/m/yy",
            yearRange: "-100:+20",
          });
-         //$("#mydate").datepicker("setDate",dates);
-         $("#indate").datepicker({
-           changeYear: true,
-           changeMonth: true,
-           dateFormat: "dd/m/yy",
-           yearRange: "-100:+20",
-         });
-         for(var i=8;i<21;i++){
-           if(i<10){
-             $('#cboStartTime')
-             .append($("<option></option>")
-               .attr("value","0"+i+":00")
-               .text("0"+i+":00"));
-           }else{
-             $('#cboStartTime')
-             .append($("<option></option>")
-               .attr("value",i+":00")
-               .text(i+":00"));
-           }
-         }
-      });
-
-      $( "#cboStartTime" ).change(function() {
-        /* --------------- if cboStartTime change =>> loop cboEndTime ------------------*/
-        var startTime = $('#cboStartTime').val();
-        startTime = startTime.split(':');
-        var myTime = parseInt(startTime[0])+1;
-        $("#cboEndTime option").remove();
-        $("#cboEndTime").append('<option selected>Choose...</option>');
-        for(var j=myTime;j<22;j++){
-          if(j<10){
-            $('#cboEndTime')
-            .append($("<option></option>")
-              .attr("value","0"+j+":00")
-              .text("0"+j+":00"));
-          }else{
-            $('#cboEndTime')
-            .append($("<option></option>")
-              .attr("value",j+":00")
-              .text(j+":00"));
-          }
-        }
-      });
-
-      $( "#cboEndTime" ).change(function() {
-        /* --------------- if cboEndTime change ------------------*/
-        if(($("#indate").val()=="") || ($("#cboBranch").val()=="Choose...")){
-          alert("กรุณาใส่วันที่และเลือกสาขาวิชาก่อนด้วยค่ะ");
-          $("#cboEndTime").val("Choose...");
-        }else{
-          var myschedule = [];
-          $.getJSON( "http://localhost:3000/room", function( data ) {
-            var chkBranch = $("#cboBranch").val().split("/");
-            $.each(data, function(key, value) {
-              if(value.code!="000000"){
-                var chkCode = value.code.substring(0,3);
-                if((chkCode==chkBranch[0]) || (chkCode==chkBranch[1])){
-                  var res = value.dates;
-                  var mapObj = {
-                     SU:"|Sun_",
-                     MO:"|Mon_",
-                     TU:"|Tue_",
-                     WE:"|Wed_",
-                     TH:"|Thu_",
-                     FR:"|Fri_",
-                     SA:"|Sat_"
-                  };
-                  res = res.replace(/SU|MO|TU|WE|TH|FR|SA/gi, function(matched){
-                    return mapObj[matched];
-                  });
-                  var result = res.split('|');
-                  //console.log(result);
-                  for(var i=0;i<result.length;i++){
-                    if(result[i]!=""){
-                      if(result[i].indexOf("EN") == -1){
-                        var chkroom = result[i].split('0 '); //split room
-                        var onroom = chkroom[1];
-                        var chktime = chkroom[0].split('_'); //split date and time
-                        var ondate = chktime[0];
-                        var intime = chktime[1];
-                        var ontime = intime.split(':00-'); //split time
-                        var sTime = parseInt(ontime[0]);
-                        var spTime = ontime[1].split(':');
-                        var eTime = "";
-                        if(spTime[1]=="5"){
-                          eTime = parseInt(spTime[0])+1;
-                        }else{
-                          eTime = parseInt(spTime[0]);
-                        }
-                        var spans = eTime-sTime;
-                        if((onroom !== "ติดต่อผู้สอน") && (onroom !== "EE 609")){
-                          myschedule.push({code:value.code, date:ondate, start:sTime, end:eTime, room:onroom, spans:spans });
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            });
-            //console.log(myschedule);
-            var stime = $("#cboStartTime").val().split(":");
-            stime = parseInt(stime[0]);
-            var etime = $("#cboEndTime").val().split(":");
-            etime = parseInt(etime[0]);
-            var isroom=[];
-            var onroom=[];
-            $.each(myschedule, function(key, value) {
-              var date = $("#indate").val().split("/");
-              date = new Date(date[2], date[1] - 1, date[0]);
-              date = date.toString().substring(0,3);
-              if(date == value.date){
-                //console.log(value.date+" "+value.start+" "+value.end+" "+value.room+" "+stime+" "+etime);
-                for(var i=value.start;i<=value.end;i++){
-                  if((i>=stime) && (i<etime)){
-                    onroom.push({onroom:value.room});
-                    //console.log(value.room+" have class");
-                    break;
-                  }else{
-                    isroom.push({onroom:value.room});
-                    //console.log(value.room+" OK!");
-                    break;
-                  }
-                }
-              }
-            });
-              //console.log(onroom);
-              //console.log(isroom);
-              /*-----------------  function uniqueOnRoom --------------------*/
-              function uniqueArr(arr){
-                var tempArr = [],
-                    uniqueRoom = [];
-
-                $.each(arr, function (index, value) {
-                    if ($.inArray(value.onroom, tempArr) === -1) {
-                        tempArr.push(value.onroom);
-                        uniqueRoom.push(value);
-                    }
-                });
-                return uniqueRoom;
-              }
-              var a = uniqueArr(onroom);
-              var b = uniqueArr(isroom);
-
-              function comparer(otherArray){
-                return function(current){
-                  return otherArray.filter(function(other){
-                    return other.onroom == current.onroom
-                  }).length == 0;
-                }
-              }
-              var onlyInB = b.filter(comparer(a));
-              var c=[];
-              $.getJSON( "http://localhost:3000/building/"+$("#cboBranch option:selected").text(), function( res ) {
-                $.each(res, function(key, value) {
-                  var result = value.title.split('ความจุ : ');
-                  var text = value.title.split(' ประเภท');
-                  if(result[1].substring(0,1) != 0){
-                    c.push({onroom:text[0]});
-                  }
-                });
-              var onlyInA = c.filter(comparer(a));
-              onlyInA = onlyInA.filter(comparer(b));
-              var result = onlyInA.concat(onlyInB);
-              var table_body ='<table class="table table-bordered" id="example"><tbody>';
-                  table_body +='<tr><th>Room</th>';
-                    $.each(result, function(key, val) {
-                        table_body +='<td>'+val.onroom+'</td>';
-                    });
-                  table_body +='</tr></tbody></table>';
-                  $('#tableTime').html(table_body);
-              });
-          });
-        }
       });
 
       $( "#cboBuilding" ).change(function() {
-        /* --------------- if cboBuilding change ------------------*/
+        /* --------------- เมื่อมีการเลือกอาคารเรียน ให้ loop แสดงห้องทั้งหมดในอาคาร ------------------*/
         $("#cboRoom option").remove();
         $("#cboRoom").append('<option selected>Choose...</option>');
         $.getJSON( "http://localhost:3000/building/"+$("#cboBuilding").val(), function( data ) {
+          if($("#cboBuilding").val() === "EE"){ //ถ้า cboBuilding เท่ากับ EE ให้เพิ่มห้อง EE 315
+            $('#cboRoom')
+            .append($("<option></option>")
+              .attr("value","0000")
+              .text("EE 315"));
+          }
           $.each(data, function(key, value) {
             var result = value.title.split('ความจุ : ');
             var text = value.title.split(' ประเภท');
@@ -332,170 +126,51 @@
           });
         });
       });
+
       $( "#mydate" ).change(function(){
-        /* --------------- if mydate change ------------------*/
+        /* --------------- เมื่อเลือกวันที่ในการค้นหาแบบห้องเรียน ------------------*/
         if($("#cboBuilding").val()=="Choose..."){
           alert("กรุณาเลือกอาคารเรียนและห้องเรียนก่อนด้วยค่ะ");
         }else{
-          $.getJSON( "http://localhost:3000/schedule2/"+$("#cboBuilding").val()+"/"+$("#cboRoom").val()+"/2561/1", function( data ) {
-            var myTable = getTable(data,$( "#mydate" ).val());
+          $.getJSON( "http://localhost:3000/room", function( data ) {
+            var myschedule = getSchedule(data,"room");
+            myschedule.sort(function(a,b){  //เรียงเวลาใน json ใหม่จากน้อยไปมาก
+               if(a.start > b.start){ return 1}
+                if(a.start < b.start){ return -1}
+                  return 0;
+            });
+            var myTable = getTable(myschedule,$( "#mydate" ).val());
             $('#tableDiv').html(myTable);
           });
         }
       });
+
       $( "#cboRoom" ).change(function() {
-        /* --------------- if cboRoom change ------------------*/
+        /* --------------- เมื่อ cboRoom มีการเปลี่ยนแปลงจากการค้นหาแบบห้องเรียน ------------------*/
         if($("#mydate").val()!=""){
-          $.getJSON( "http://localhost:3000/schedule2/"+$("#cboBuilding").val()+"/"+$("#cboRoom").val()+"/2561/1", function( data ) {
-            var myTable = getTable(data,$( "#mydate" ).val());
+          $.getJSON( "http://localhost:3000/room", function( data ) {
+            var myschedule = getSchedule(data,"room");
+            myschedule.sort(function(a,b){  //เรียงเวลาใน json ใหม่จากน้อยไปมาก
+               if(a.start > b.start){ return 1}
+                if(a.start < b.start){ return -1}
+                  return 0;
+            });
+            var myTable = getTable(myschedule,$( "#mydate" ).val());
             $('#tableDiv').html(myTable);
           });
         }else{
-          $.getJSON( "http://localhost:3000/schedule2/"+$("#cboBuilding").val()+"/"+$("#cboRoom").val()+"/2561/1", function( data ) {
-            var myTable = getTable(data,null);
+          $.getJSON( "http://localhost:3000/room", function( data ) {
+            var myschedule = getSchedule(data,"room");
+            myschedule.sort(function(a,b){  //เรียงเวลาใน json ใหม่จากน้อยไปมาก
+               if(a.start > b.start){ return 1}
+                if(a.start < b.start){ return -1}
+                  return 0;
+            });
+            var myTable = getTable(myschedule,null);
             $('#tableDiv').html(myTable);
           });
         }
       });
-
-      function startDate(before) {
-        /* --------------- function find week ------------------*/
-        var dates = new Date();
-        var dateSearch = $('#mydate').val();
-        if($.trim(dateSearch) == ''){
-          dates = dates;
-        }else{
-          var res = dateSearch.split("/")
-          dates = new Date(res[2], res[1] - 1, res[0])
-        }
-        var res = dates.setTime(dates.getTime() + (before * 24 * 60 * 60 * 1000));
-        return new Date(res);
-      }
-
-      function getTable(data,dateSearch){
-        /* --------------- function create table ------------------*/
-        var dates = new Date();
-        if(dateSearch == null){ //-----------if mydate is null ---------------
-          dates = dates;
-        }else{
-          var res = dateSearch.split("/")
-          dates = new Date(res[2], res[1] - 1, res[0])
-        }
-        var DateStr = dates.toString();
-        var chkDate = DateStr.substring(0,3);
-        var dateString = [{"day":"Sun"},{"day":"Mon"},{"day":"Tue"},
-                          {"day":"Wed"},{"day":"Thu"},{"day":"Fri"},{"day":"Sat"}];
-        var dateShow = [];
-        var before=0;
-        for(var i=0;i<7;i++){
-          if(chkDate==dateString[i].day){
-            before-=i;
-          }
-        }
-        for(var i=0;i<7;i++){
-          var numDate = startDate(before);
-          before++;
-          var month = numDate.getMonth()+1;
-          var day = numDate.getDate();
-          var year = numDate.getFullYear();
-          var datenow = day+"/"+month+"/"+year;
-          dateShow.push(datenow);
-        }
-
-        var response = [{
-          "time":"08:00-09:00"},{"time":"09:00-10:00"},{"time":"10:00-11:00"},{
-          "time":"11:00-12:00"},{"time":"12:00-13:00"},{"time":"13:00-14:00"},{
-          "time":"14:00-15:00"},{"time":"15:00-16:00"},{"time":"16:00-17:00"},{
-          "time":"17:00-18:00"},{"time":"18:00-19:00"},{"time":"19:00-20:00"},{
-          "time":"20:00-21:00"
-        }];
-        var dates = [{
-          "in_date":"อาทิตย์"},{"in_date":"จันทร์"},{
-          "in_date":"อังคาร"},{"in_date":"พุธ"},{
-          "in_date":"พฤหัสบดี"},{"in_date":"ศุกร์"},{
-          "in_date":"เสาร์"
-        }];
-        var temp = [];
-        var chk=0;
-        $.each(data, function(key, value) {
-          $.each(value, function(key, val) {
-            if($("#cboRoom option:selected").text()==val.room){
-              var in_time = val.start.split('-');
-              var on_time = in_time[0].replace(":","");
-              var to_time = in_time[1].replace(":","");
-              var all_time=parseInt(to_time)+50;
-              var span=(all_time-parseInt(on_time))/100;
-              var index="";
-              if(in_time[0]=="08:00"){ index=0;
-              }else if(in_time[0]=="09:00"){ index=1;
-              }else if(in_time[0]=="10:00"){ index=2;
-              }else if(in_time[0]=="11:00"){ index=3;
-              }else if(in_time[0]=="12:00"){ index=4;
-              }else if(in_time[0]=="13:00"){ index=5;
-              }else if(in_time[0]=="14:00"){ index=6;
-              }else if(in_time[0]=="15:00"){ index=7;
-              }else if(in_time[0]=="16:00"){ index=8;
-              }else if(in_time[0]=="17:00"){ index=9;
-              }else if(in_time[0]=="18:00"){ index=10;
-              }else if(in_time[0]=="19:00"){ index=11;
-              }else {index=12;}
-              temp.push({v:parseInt(on_time), eng:val.eng, thai:val.thai, code:val.code, date: val.date, start:val.start, room:val.room, span:span.toString(), col:index});
-            }
-          });
-        });
-        temp.sort(function(a,b){
-           if(a.v > b.v){ return 1}
-            if(a.v < b.v){ return -1}
-              return 0;
-        });
-        var table_body ='<table class="table table-bordered" id="example"><thead>';
-            table_body +='<tr><th>Date/Time</th>';
-            $.each(response, function(key, getTime) {
-              table_body +='<th>';
-              table_body +=getTime.time;
-              table_body +='</th>';
-            });
-              table_body+='</tr></thead><tbody>';
-            var num=0;
-            $.each(dates, function(key, getDate) {
-              var mydate = $('#mydate').val();
-              mydate = mydate.replace(/\b0(?=\d)/g, ''); //trim zero from mydate e.g. 01/10/2018 => 1/10/2018
-
-              if(dateShow[num]==mydate){
-                table_body +='<tr align="center" class="bg-light">';
-              }else{
-                table_body +='<tr align="center">';
-              }
-              table_body +='<th>';
-              table_body +=getDate.in_date+"<br><span style='font-weight:normal;font-size:12px;'>"+dateShow[num]+"</span>";
-              table_body +='</th>';
-              for(var i=chk;i<13;i++){
-                $.each(temp, function(key, val) {
-                  if($("#cboRoom option:selected").text()==val.room){
-                    if(val.date==getDate.in_date){
-                      if(i==val.col){
-                        chk=val.col+parseInt(val.span);
-                        table_body +='<td class="align-middle" colspan="'+val.span+'">';
-                        table_body +=val.code;
-                        table_body +='</td>';
-                        return false;
-                      }
-                    }
-                  }
-                });
-                if(i>=chk){
-                  table_body +='<td>';
-                  table_body +='';
-                  table_body +='</td>';
-                }
-              }
-              chk=0;
-              num++;
-              table_body +='</tr>';
-            });
-            table_body+='</tbody></table>';
-          return table_body;
-        }
     </script>
   </body>
 </html>
