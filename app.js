@@ -21,7 +21,7 @@ db.on('connect', function () {
     console.log('database connected')
 });
 
-var execPHP = require('./execphp.js')();
+/*var execPHP = require('./execphp.js')();
 execPHP.phpFolder = '.\\public\\phpfiles\\';
 
 app.use('*.php',function(request,response,next) {
@@ -29,33 +29,20 @@ app.use('*.php',function(request,response,next) {
 		response.write(phpResult);
 		response.end();
 	});
-});
-
-var ldap = require('ldapjs');
-
-function authDN(dn, password, cb) {
-  var client = ldap.createClient({url: 'ldap://dc-03-svr'});
-
-  client.bind(dn, password, function (err) {
-    client.unbind();
-    cb(err === null, err);
-  });
-}
-
-function output(res, err) {
-  if (res) {
-    console.log('success');
-  } else {
-    console.log('failure');
-  }
-}
-
-// should print "success"
-authDN('cn=user', 'goodpasswd', output);
-// should print "failure"
-authDN('cn=user', 'badpasswd', output);
+});*/
 
 app.get("/login/:usr/:pwd",function(req,res){
+  var opt ={
+      'username':req.params.usr,
+      'password':req.params.pwd,
+  }
+  condb.ldaplogin(opt,function(result) {
+    res.json(result);
+    //console.log(result);
+	});
+});
+
+/*app.get("/test/:usr/:pwd",function(req,res){
   var opt ={
       'username':req.params.usr,
       'password':req.params.pwd,
@@ -63,7 +50,7 @@ app.get("/login/:usr/:pwd",function(req,res){
   condb.chklogin(opt,function(result) {
     res.json(result);
 	});
-});
+});*/
 
 app.use(bodyParser.json());
 app.use("/public", express.static(__dirname + "/public"));
@@ -254,7 +241,7 @@ app.get('/section', function (req, res) {
 						 var tmpSchedule = {
 						 	'eng':eng,
 						 	'thai':thai,
-							 'dep':dep,
+							'dep':dep,
 						 	'unit':unit,
 						 	'code':code,
 						 	//'sec':result.output[i-5].text,
