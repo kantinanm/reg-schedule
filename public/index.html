@@ -39,7 +39,7 @@
             <i class="material-icons">computer</i>
             ระบบจองห้องเรียนออนไลน์
           </a>
-          <form id="frmLogin" class="form-inline my-2 my-lg-0">
+          <form id="frmLogin" class="form-inline my-2 my-lg-0" method="post" action="/login">
             <input class="form-control mr-sm-2" type="text" placeholder="Username" name="txtUsr" id="txtUsr">
             <input class="form-control mr-sm-2" type="password" placeholder="Password" name="txtPwd" id="txtPwd">
             <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit" id="cmdSummit">เข้าสู่ระบบ</button>
@@ -172,13 +172,14 @@
         }
       });
 
-      $( "#cmdSummit" ).click(function() {
+      /*$( "#txtPwd" ).change(function() {
         var usr = $("#txtUsr").val();
         var pwd =  $("#txtPwd").val();
         $.getJSON( "http://localhost:3000/login/"+usr+"/"+pwd, function( data ) {
-          alert(data);
+          //alert("seccess");
+          //console.log(data);
         });
-      });
+      });*/
     </script>
   </body>
 </html>

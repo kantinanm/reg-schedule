@@ -7,6 +7,8 @@ var app = express();
 var path = require('path');
 var iconv = require('iconv-lite');
 var condb = require('./db/connectdb');
+var bodyParser = require('body-parser');
+//var router = express.Router();
 //var public = path.join(__dirname, 'public');
 const isNumber = require('is-number');
 
@@ -21,7 +23,9 @@ db.on('connect', function () {
     console.log('database connected')
 });
 
-/*var execPHP = require('./execphp.js')();
+app.use(bodyParser.urlencoded({ extended: true }));
+
+var execPHP = require('./execphp.js')();
 execPHP.phpFolder = '.\\public\\phpfiles\\';
 
 app.use('*.php',function(request,response,next) {
@@ -29,9 +33,9 @@ app.use('*.php',function(request,response,next) {
 		response.write(phpResult);
 		response.end();
 	});
-});*/
+});
 
-app.get("/login/:usr/:pwd",function(req,res){
+/*app.get("/login/:usr/:pwd",function(req,res){
   var opt ={
       'username':req.params.usr,
       'password':req.params.pwd,
@@ -40,17 +44,24 @@ app.get("/login/:usr/:pwd",function(req,res){
     res.json(result);
     //console.log(result);
 	});
+});*/
+
+app.post('/login', function(req, res){
+    var opt ={
+        'username':req.body.txtUsr,
+        'password':req.body.txtPwd,
+    }
+    condb.ldaplogin(opt,function(result) {
+      res.json(result);
+      //console.log(result);
+  	});
 });
 
-/*app.get("/test/:usr/:pwd",function(req,res){
-  var opt ={
-      'username':req.params.usr,
-      'password':req.params.pwd,
-  }
-  condb.chklogin(opt,function(result) {
+app.get("/user",function(req,res){
+  condb.listUser(function(result) {
     res.json(result);
 	});
-});*/
+});
 
 app.use(bodyParser.json());
 app.use("/public", express.static(__dirname + "/public"));
