@@ -1,3 +1,18 @@
+function getSubject(opt){
+  var subject = [];
+  var data = uniqueSub(opt);
+  var id = $("#cboBranch").val();
+  $.each(data, function(key, value) {
+    if(value.code!="000000"){
+      var chkCode = value.code.substring(0,3);
+      if(chkCode === id){
+        subject.push({code:value.code, subject:value.subject});
+      }
+    }
+  });
+  return subject;
+}
+
 function getSchedule(data,chk){
   var myschedule = [];
   var chkBranch;
@@ -68,7 +83,7 @@ function getSchedule(data,chk){
               }else if(sTime==19){ index=11;
               }else {index=12;}
               if((onroom !== "ติดต่อผู้สอน") && (onroom !== "EE 609")){ //ตัดกรณีที่ room เป็น ติอต่อผู้สอน หรือ ห้องที่ไม่ได้ใช้ในการเรียนการสอน
-                myschedule.push({code:value.code, subject:value.subject, date:ondate, start:sTime, end:eTime, room:onroom, span:spans, col:index });
+                myschedule.push({code:value.code, date:ondate, start:sTime, end:eTime, room:onroom, span:spans, col:index });
               }
             }
           }

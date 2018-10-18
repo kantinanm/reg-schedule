@@ -293,7 +293,7 @@ app.get('/room', function (req, res) {
 						return tmp;
 				 }]
 				 }, function(err, result) {
-           //console.log(result);
+           //res.json(result);
            var list=[];
            var code,subject,datetime;
            for(var i=22;i<result.output.length-15;i++) {
@@ -345,6 +345,42 @@ app.get('/room', function (req, res) {
                  'dates':datetime
                }
                list.push(tmpSchedule);
+					 }
+           //console.log(list);
+           res.json(list)
+				});
+		  });
+});
+
+app.get('/subject/:section', function (req, res) {
+  	var url_path ='http://reg2.nu.ac.th/registrar/class_info_1.asp?printfriendly=1&coursestatus=O00&facultyid=207';
+        url_path+='&maxrow=500&acadyear=2561&semester=1&coursecode='+req.params.section+'*&cmd=2&avs685944429=19&backto=home';
+		getUTF8(url_path,function(utf8) {
+		htmlToJson.parse(utf8, {
+				 'output': ['td', function($tr) {
+					//console.log($tr.text());
+					   var tmp = {
+						 'text':$tr.text()
+					   };
+						return tmp;
+				 }]
+				 }, function(err, result) {
+           //res.json(result);
+           var list=[];
+           var code,subject;
+           for(var i=30;i<result.output.length-15;i++) {
+             if(result.output[i].text.trim().substring(0,3) === req.params.section){
+               code = result.output[i].text.trim().substring(0,6);
+               subject = result.output[i+1].text
+             }else{
+               code="000000";
+               subject="subject";
+             }
+             var tmpSchedule = {
+               'code':code,
+               'subject':subject
+             }
+             list.push(tmpSchedule);
 					 }
            //console.log(list);
            res.json(list)

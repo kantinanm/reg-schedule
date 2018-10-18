@@ -41,42 +41,49 @@
         </a>
       </nav>
       <form>
-        <div class="form-group row">
-          <label for="cboBranch" class="col-sm-2 col-form-label">เลือกสาขาวิชา</label>
-          <div class="col-sm-5">
-            <select class="custom-select" id="cboBranch">
-              <option selected>Choose...</option>
-              <option value="303/">วิศวกรรมไฟฟ้า</option>
-              <option value="305/">วิศวกรรมคอมพิวเตอร์</option>
-            </select>
+        <div class="row">
+          <div class="col-sm">
+            <div class="card">
+              <div class="card-header">จองห้องเรียน</div>
+              <div class="card-body">
+                <div class="form-group row">
+                  <label for="cboBranch" class="col-sm-2 col-form-label">เลือกสาขาวิชา</label>
+                  <div class="col-sm-5">
+                    <select class="custom-select" id="cboBranch">
+                      <option selected>Choose...</option>
+                      <option value="303">วิศวกรรมไฟฟ้า</option>
+                      <option value="305">วิศวกรรมคอมพิวเตอร์</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="cboSubject" class="col-sm-2 col-form-label">รายวิชา</label>
+                  <div class="col-sm-5">
+                    <select class="custom-select" id="cboSubject">
+                      <option value="000000" selected>Choose...</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="form-group row">
-          <label for="cboSubject" class="col-sm-2 col-form-label">รายวิชา</label>
-          <div class="col-sm-5">
-            <select class="custom-select" id="cboSubject">
-              <option value="000000" selected>Choose...</option>
-            </select>
-          </div>
-        </div>
-      </form>
+      </div>
+    </form>
     </div>
     <script>
       /*$(document).ready(function(){
 
       });*/
-
       $( "#cboBranch" ).change(function() {
         $("#cboSubject option").remove();
         $("#cboSubject").append('<option selected>Choose...</option>');
-        $.getJSON( "http://localhost:3000/room/", function( data ) {
-          var subName = getSchedule(data,"Time");
-          //subName = uniqueSub(subName);
+        $.getJSON( "http://localhost:3000/subject/"+$("#cboBranch").val(), function( data ) {
+          var subName = getSubject(data);
           $.each(subName, function(key, value) {
             var chkName = value.subject.replace(/[^A-Za-z0-9_\.]+/g, " ");
-            //chkName = chkName.split(".");
-            //chkName = chkName[0].trim();
-            //console.log(chkName);
+            chkName = chkName.split(".");
+            chkName = chkName[0].trim();
               $('#cboSubject')
               .append($("<option></option>")
                 .attr("value",value.code)
