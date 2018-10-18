@@ -68,7 +68,7 @@ app.use("/public", express.static(__dirname + "/public"));
 app.set("view engine", "ejs");
 
 app.get('/', function(req, res) {
-    res.sendFile('public/index.html', { root: __dirname });
+    res.sendFile('public/frmAdd.html', { root: __dirname });
 });
 
 
@@ -299,37 +299,37 @@ app.get('/room', function (req, res) {
            for(var i=22;i<result.output.length-15;i++) {
                if(result.output[i].text.substring(0,2) == "SU"){
                  code=result.output[i-3].text.trim().substring(0,6);
-                 subject=result.output[i-2].text.trim();
+                 subject=result.output[i-2].text;
                  datetime=result.output[i].text;
                  i+=10;
                }else if(result.output[i].text.substring(0,2) == "MO"){
                  code=result.output[i-3].text.trim().substring(0,6);
-                 subject=result.output[i-2].text.trim();
+                 subject=result.output[i-2].text;
                  datetime=result.output[i].text;
                  i+=10;
                }else if(result.output[i].text.substring(0,2) == "TU"){
                  code=result.output[i-3].text.trim().substring(0,6);
-                 subject=result.output[i-2].text.trim();
+                 subject=result.output[i-2].text;
                  datetime=result.output[i].text;
                  i+=10;
                }else if(result.output[i].text.substring(0,2) == "WE"){
                  code=result.output[i-3].text.trim().substring(0,6);
-                 subject=result.output[i-2].text.trim();
+                 subject=result.output[i-2].text;
                  datetime=result.output[i].text;
                  i+=10;
                }else if(result.output[i].text.substring(0,2) == "TH"){
                  code=result.output[i-3].text.trim().substring(0,6);
-                 subject=result.output[i-2].text.trim();
+                 subject=result.output[i-2].text;
                  datetime=result.output[i].text;
                  i+=10;
                }else if(result.output[i].text.substring(0,2) == "FR"){
                  code=result.output[i-3].text.trim().substring(0,6);
-                 subject=result.output[i-2].text.trim();
+                 subject=result.output[i-2].text;
                  datetime=result.output[i].text;
                  i+=10;
                }else if(result.output[i].text.substring(0,2) == "SA"){
                  code=result.output[i-3].text.trim().substring(0,6);
-                 subject=result.output[i-2].text.trim();
+                 subject=result.output[i-2].text;
                  datetime=result.output[i].text;
                  i+=10;
                }else if(result.output[i].text == ""){
@@ -346,6 +346,7 @@ app.get('/room', function (req, res) {
                }
                list.push(tmpSchedule);
 					 }
+           //console.log(list);
            res.json(list)
 				});
 		  });

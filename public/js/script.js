@@ -68,7 +68,7 @@ function getSchedule(data,chk){
               }else if(sTime==19){ index=11;
               }else {index=12;}
               if((onroom !== "ติดต่อผู้สอน") && (onroom !== "EE 609")){ //ตัดกรณีที่ room เป็น ติอต่อผู้สอน หรือ ห้องที่ไม่ได้ใช้ในการเรียนการสอน
-                myschedule.push({code:value.code, date:ondate, start:sTime, end:eTime, room:onroom, span:spans, col:index });
+                myschedule.push({code:value.code, subject:value.subject, date:ondate, start:sTime, end:eTime, room:onroom, span:spans, col:index });
               }
             }
           }
@@ -100,6 +100,18 @@ function comparer(otherArray){
       return other.onroom == current.onroom
     }).length == 0;
   }
+}
+
+function uniqueSub(arr){
+  var tempArr = [],
+      uniqueSub = [];
+  $.each(arr, function (index, value) {
+      if ($.inArray(value.code, tempArr) === -1) {
+          tempArr.push(value.code);
+          uniqueSub.push(value);
+      }
+  });
+  return uniqueSub;
 }
 
 function startDate(before) {
