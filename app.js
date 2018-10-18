@@ -293,45 +293,55 @@ app.get('/room', function (req, res) {
 						return tmp;
 				 }]
 				 }, function(err, result) {
+           //console.log(result);
            var list=[];
-           var code,datetime;
+           var code,subject,datetime;
            for(var i=22;i<result.output.length-15;i++) {
                if(result.output[i].text.substring(0,2) == "SU"){
                  code=result.output[i-3].text.trim().substring(0,6);
+                 subject=result.output[i-2].text.trim();
                  datetime=result.output[i].text;
                  i+=10;
                }else if(result.output[i].text.substring(0,2) == "MO"){
                  code=result.output[i-3].text.trim().substring(0,6);
+                 subject=result.output[i-2].text.trim();
                  datetime=result.output[i].text;
                  i+=10;
                }else if(result.output[i].text.substring(0,2) == "TU"){
                  code=result.output[i-3].text.trim().substring(0,6);
+                 subject=result.output[i-2].text.trim();
                  datetime=result.output[i].text;
                  i+=10;
                }else if(result.output[i].text.substring(0,2) == "WE"){
                  code=result.output[i-3].text.trim().substring(0,6);
+                 subject=result.output[i-2].text.trim();
                  datetime=result.output[i].text;
                  i+=10;
                }else if(result.output[i].text.substring(0,2) == "TH"){
                  code=result.output[i-3].text.trim().substring(0,6);
+                 subject=result.output[i-2].text.trim();
                  datetime=result.output[i].text;
                  i+=10;
                }else if(result.output[i].text.substring(0,2) == "FR"){
                  code=result.output[i-3].text.trim().substring(0,6);
+                 subject=result.output[i-2].text.trim();
                  datetime=result.output[i].text;
                  i+=10;
                }else if(result.output[i].text.substring(0,2) == "SA"){
                  code=result.output[i-3].text.trim().substring(0,6);
+                 subject=result.output[i-2].text.trim();
                  datetime=result.output[i].text;
                  i+=10;
                }else if(result.output[i].text == ""){
                  code="000000";
+                 subject="subject";
                  datetime="FF";
                  i+=10;
                }
 
                var tmpSchedule = {
                  'code':code,
+                 'subject':subject,
                  'dates':datetime
                }
                list.push(tmpSchedule);
