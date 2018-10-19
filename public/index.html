@@ -39,11 +39,16 @@
             <i class="material-icons">computer</i>
             ระบบจองห้องเรียนออนไลน์
           </a>
-          <form id="frmLogin" class="form-inline my-2 my-lg-0" method="post" action="/login">
+          <!--<form id="frmLogin" class="form-inline my-2 my-lg-0" method="post">
             <input class="form-control mr-sm-2" type="text" placeholder="Username" name="txtUsr" id="txtUsr">
             <input class="form-control mr-sm-2" type="password" placeholder="Password" name="txtPwd" id="txtPwd">
             <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit" id="cmdSummit">เข้าสู่ระบบ</button>
-          </form>
+          </form>-->
+          <div class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="text" placeholder="Username" name="txtUsr" id="txtUsr" />
+            <input class="form-control mr-sm-2" type="password" placeholder="Password" name="txtPwd" id="txtPwd" />
+            <button class="btn btn-outline-secondary my-2 my-sm-0" id="cmdSummit">เข้าสู่ระบบ</button>
+          </div>
         </nav>
         <div class="row">
         </div>
@@ -101,6 +106,23 @@
            dateFormat: "dd/m/yy",
            yearRange: "-100:+20",
          });
+      });
+
+      $("#cmdSummit").click(function () {
+        var form = {
+          txtUsr: $("#txtUsr").val(),
+          txtPwd: $("#txtPwd").val()
+        }
+        $.post("/login", form, function (result) {
+          $.post("/login", form, function (result) {
+            if (result) {
+              sessionStorage.setItem('user', JSON.stringify(result));
+              window.location.href = 'public/schedule.html';
+            } else {
+              alert('Invalid user or password')
+            }
+          });
+        });
       });
 
       $( "#cboBuilding" ).change(function() {

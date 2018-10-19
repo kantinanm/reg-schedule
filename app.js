@@ -53,7 +53,6 @@ app.post('/login', function(req, res){
     }
     condb.ldaplogin(opt,function(result) {
       res.json(result);
-      //console.log(result);
   	});
 });
 
@@ -68,7 +67,7 @@ app.use("/public", express.static(__dirname + "/public"));
 app.set("view engine", "ejs");
 
 app.get('/', function(req, res) {
-    res.sendFile('public/frmAdd.html', { root: __dirname });
+    res.sendFile('public/index.html', { root: __dirname });
 });
 
 
