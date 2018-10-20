@@ -1,7 +1,7 @@
 function getSubject(opt){
   var subject = [];
   var data = uniqueSub(opt);
-  var id = $("#cboBranch").val();
+  var id = $("#cboSection").val();
   $.each(data, function(key, value) {
     if(value.code!="000000"){
       var chkCode = value.code.substring(0,3);
@@ -224,8 +224,9 @@ function getTable(data,dateSearch){
             }
           });
           if(i>=chk){
-            table_body +='<td>';
-            table_body +='';
+            table_body +='<td class="align-middle">';
+            table_body +='<a href="#" data-toggle="modal" data-target="#bookRoom">';
+            table_body +='<i class="material-icons" title="จองห้อง">sentiment_satisfied</i></a>';
             table_body +='</td>';
           }
         }

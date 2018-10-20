@@ -39,6 +39,10 @@
             <i class="material-icons">computer</i>
             ระบบจองห้องเรียนออนไลน์
           </a>
+          <div class="form-inline">
+            <div id="username"></div>&nbsp;&nbsp;
+            <button class="btn btn-outline-info my-2 my-sm-0" type="submit" id="cmdLogout">ออกจากระบบ</button>
+          </div>
         </nav>
         <div class="row">
         </div>
@@ -133,9 +137,83 @@
             </div>
           </div>
       </div>
-
+        <!-- Modal -->
+        <div class="modal fade bd-example-modal-lg" id="bookRoom" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>-->
+              </div>
+              <div class="modal-body">
+                <form>
+                  <div class="row">
+                    <div class="col-sm">
+                      <div class="form-group row">
+                        <label for="cboSection" class="col-sm-2 col-form-label">เลือกสาขาวิชา</label>
+                        <div class="col-sm">
+                          <select class="custom-select" id="cboSection">
+                            <option selected>Choose...</option>
+                            <option value="303">วิศวกรรมไฟฟ้า</option>
+                            <option value="305">วิศวกรรมคอมพิวเตอร์</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="cboSubject" class="col-sm-2 col-form-label">รายวิชา</label>
+                        <div class="col-sm">
+                          <select class="custom-select" id="cboSubject">
+                            <option value="000000" selected>Choose...</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="ondate" class="col-sm-2 col-form-label">วันที่</label>
+                        <div class="col-sm">
+                          <input class="form-control" id="ondate" disabled>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="startTime" class="col-sm-2 col-form-label">เวลาเริ่มต้น</label>
+                        <div class="col-sm-4">
+                          <input class="form-control" id="startTime" disabled>
+                        </div>
+                        <label for="endTime" class="col-sm-2 col-form-label">เวลาสิ้นสุด</label>
+                        <div class="col-sm-4">
+                          <select id="endTime" class="form-control">
+                            <option selected>Choose...</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="onRoom" class="col-sm-2 col-form-label">ห้อง</label>
+                        <div class="col-sm">
+                          <input class="form-control" id="onRoom" disabled>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
     <script>
       $(document).ready(function(){
+        var user = sessionStorage.getItem("user");
+        if (user != null) {
+            var myAccount = JSON.parse(user);
+            $.each(myAccount, function(key, value) {
+              var fullname = value.prename+value.firstname+" "+value.lastname;
+              $('#username').html('<b>ยินดีต้อนรับ :</b> '+fullname);
+            });
+        }
          $("#mydate").datepicker({
            changeYear: true,
            changeMonth: true,
@@ -161,6 +239,28 @@
                .text(i+":00"));
            }
          }
+      });
+
+      $("#cmdLogout").click(function () {
+        sessionStorage.removeItem('user');
+        window.location.href = '/public/index.html';
+      });
+
+      $( "#cboSection" ).change(function() {
+        $("#cboSubject option").remove();
+        $("#cboSubject").append('<option selected>Choose...</option>');
+        $.getJSON( "http://localhost:3000/subject/"+$("#cboSection").val(), function( data ) {
+          var subName = getSubject(data);
+          $.each(subName, function(key, value) {
+            var chkName = value.subject.replace(/[^A-Za-z0-9_\.]+/g, " ");
+            chkName = chkName.split(".");
+            chkName = chkName[0].trim();
+              $('#cboSubject')
+              .append($("<option></option>")
+                .attr("value",value.code)
+                .text(value.code+" "+chkName));
+          });
+        });
       });
 
       $( "#cboStartTime" ).change(function() {
