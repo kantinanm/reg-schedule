@@ -136,8 +136,8 @@ function startDate(before) {
   if($.trim(dateSearch) == ''){
     dates = dates;
   }else{
-    var res = dateSearch.split("/")
-    dates = new Date(res[2], res[1] - 1, res[0])
+    var res = dateSearch.split("/");
+    dates = new Date(res[2], res[1] - 1, res[0]);
   }
   var res = dates.setTime(dates.getTime() + (before * 24 * 60 * 60 * 1000));
   return new Date(res);
@@ -149,8 +149,8 @@ function getTable(data,dateSearch){
   if(dateSearch == null){ //-----------if mydate is null ---------------
     dates = dates;
   }else{
-    var res = dateSearch.split("/")
-    dates = new Date(res[2], res[1] - 1, res[0])
+    var res = dateSearch.split("/");
+    dates = new Date(res[2], res[1] - 1, res[0]);
   }
   var DateStr = dates.toString();
   var chkDate = DateStr.substring(0,3);
@@ -224,9 +224,14 @@ function getTable(data,dateSearch){
             }
           });
           if(i>=chk){
+            var passDate = dateShow[num].split("/");
             table_body +='<td class="align-middle">';
-            table_body +='<a href="#" data-toggle="modal" data-target="#bookRoom">';
-            table_body +='<i class="material-icons" title="จองห้อง">sentiment_satisfied</i></a>';
+            if(i==4){
+              table_body +='<i class="material-icons">sentiment_dissatisfied</i></a>';
+            }else{
+              table_body +='<a href="#" data-toggle="modal" data-target="#bookRoom" onClick="test('+i+','+passDate[0]+','+passDate[1]+','+passDate[2]+')">';
+              table_body +='<i class="material-icons" title="จองห้อง">sentiment_satisfied</i></a>';
+            }
             table_body +='</td>';
           }
         }
@@ -236,4 +241,37 @@ function getTable(data,dateSearch){
       });
       table_body+='</tbody></table>';
       return table_body;
+  }
+
+  function test(col,day,month,year){
+    var myTime;
+    if(col==0){ myTime="08:00";
+    }else if(col==1){ myTime="09:00";
+    }else if(col==2){ myTime="10:00";
+    }else if(col==3){ myTime="11:00";
+    }else if(col==4){ myTime="12:00";
+    }else if(col==5){ myTime="13:00";
+    }else if(col==6){ myTime="14:00";
+    }else if(col==7){ myTime="15:00";
+    }else if(col==8){ myTime="16:00";
+    }else if(col==9){ myTime="17:00";
+    }else if(col==10){ myTime="18:00";
+    }else if(col==11){ myTime="19:00";
+    }else {myTime="20:00";}
+    $("#ondate").val(day+"/"+month+"/"+year);
+    $("#startTime").val(myTime);
+
+    for(var i=(col+9);i<22;i++){ //loop เวลาใน endTime
+      if(i<10){
+        $('#endTime')
+        .append($("<option></option>")
+          .attr("value","0"+i+":00")
+          .text("0"+i+":00"));
+      }else{
+        $('#endTime')
+        .append($("<option></option>")
+          .attr("value",i+":00")
+          .text(i+":00"));
+      }
+    }
   }
