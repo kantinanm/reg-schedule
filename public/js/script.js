@@ -142,8 +142,9 @@ function startDate(before) {
   var res = dates.setTime(dates.getTime() + (before * 24 * 60 * 60 * 1000));
   return new Date(res);
 }
-
+var reg;
 function getTable(data,dateSearch){
+  reg=data;
   /* --------------- function create table ------------------*/
   var dates = new Date();
   if(dateSearch == null){ //-----------if mydate is null ---------------
@@ -224,13 +225,11 @@ function getTable(data,dateSearch){
             }
           });
           if(i>=chk){
-            var passDate = dateShow[num].split("/");
-            table_body +='<td class="align-middle">';
             if(i==4){
-              table_body +='<i class="material-icons">sentiment_dissatisfied</i></a>';
+              table_body +='<td style="background-color:grey;">';
             }else{
-              table_body +='<a href="#" data-toggle="modal" data-target="#bookRoom" onClick="test('+i+','+passDate[0]+','+passDate[1]+','+passDate[2]+')">';
-              table_body +='<i class="material-icons" title="จองห้อง">sentiment_satisfied</i></a>';
+              table_body +='<td style="cursor:pointer" class="align-middle" data-toggle="modal"';
+              table_body +='data-target="#bookRoom" onClick="onTdClick('+i+',\''+dateShow[num]+'\',\''+getDate.in_date+'\')">';
             }
             table_body +='</td>';
           }
@@ -243,35 +242,55 @@ function getTable(data,dateSearch){
       return table_body;
   }
 
-  function test(col,day,month,year){
-    var myTime;
-    if(col==0){ myTime="08:00";
-    }else if(col==1){ myTime="09:00";
-    }else if(col==2){ myTime="10:00";
-    }else if(col==3){ myTime="11:00";
-    }else if(col==4){ myTime="12:00";
-    }else if(col==5){ myTime="13:00";
-    }else if(col==6){ myTime="14:00";
-    }else if(col==7){ myTime="15:00";
-    }else if(col==8){ myTime="16:00";
-    }else if(col==9){ myTime="17:00";
-    }else if(col==10){ myTime="18:00";
-    }else if(col==11){ myTime="19:00";
-    }else {myTime="20:00";}
-    $("#ondate").val(day+"/"+month+"/"+year);
+  function onTdClick(col,day,inDate){
+    $("#cboSection").val("Choose...");
+    $("#cboSubject").val("Choose...");
+    $("#endTime option").remove();
+    $("#endTime").append('<option selected>Choose...</option>');
+    var room = $("#cboRoom option:selected").text();
+    var myTime=col+8;
+    myTime<10?myTime="0"+myTime+":00":myTime=myTime+":00";
+    $("#ondate").val(day);
     $("#startTime").val(myTime);
-
-    for(var i=(col+9);i<22;i++){ //loop เวลาใน endTime
-      if(i<10){
-        $('#endTime')
-        .append($("<option></option>")
-          .attr("value","0"+i+":00")
-          .text("0"+i+":00"));
-      }else{
-        $('#endTime')
-        .append($("<option></option>")
-          .attr("value",i+":00")
-          .text(i+":00"));
-      }
+    $("#onRoom").val(room);
+    var hours = reg.filter(x=>x.date===inDate && x.room===room);
+    for(var i=col;i < 13;i++){ //loop เวลาใน endTime
+      if(hours.findIndex(x => x.col === i) > -1) break;
+      $('#endTime').append($("<option></option>")
+        .attr("value",(i+9) + ":00")
+        .text((i+9) +":00"));
     }
+  }
+
+  onSave = ()=>{
+    var user = sessionStorage.getItem("user");
+    if (user === null) return alert("ไม่พบผู้ใช้งาน กรุณาเข้าสู่ระบบใหม่อีกครั้ง");
+    var myAccount = JSON.parse(user)[0];
+    var myDate = $("#ondate").val().split("/");
+    myDate = myDate[2]+"-"+myDate[1]+"-"+myDate[0];
+    var insert = {
+      cboSubject:$("#cboSubject").val(),
+      ondate:myDate,
+      col:Number($("#startTime").val().split(":")[0])-8,
+      startTime:Number($("#startTime").val().split(":")[0]),
+      endTime:Number($("#endTime").val().split(":")[0]),
+      onRoom:$("#onRoom").val(),
+      user:myAccount.internet_account,
+    };
+    insert.span = insert.endTime - insert.startTime + 1;
+    $.post("/insert", insert, function (result) {
+      if (result) {
+        alert("OK");
+        $("#example tr").each((i, tr)=>{
+          var th = $(tr).find("th:first-child span").text();
+          if(th===$("#ondate").val()){
+            for(let i=0;i<insert.span;i++){
+              $(tr).find("td:nth-child("+(insert.col+i)+")").append('<i class="material-icons" title="'+insert.cboSubject+'">sentiment_satisfied</i>');
+            }
+          }
+        })
+      } else {
+        alert('Invalid');
+      }
+    });
   }

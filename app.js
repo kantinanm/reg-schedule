@@ -56,6 +56,12 @@ app.post('/login', function(req, res){
   	});
 });
 
+app.post('/insert', function(req, res){
+    condb.InsertDB(req.body,function(result) {
+      res.json(result);
+  	});
+});
+
 app.get("/user",function(req,res){
   condb.listUser(function(result) {
     res.json(result);

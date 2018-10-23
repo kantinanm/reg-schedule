@@ -162,7 +162,7 @@
                         <label for="cboSubject" class="col-sm-2 col-form-label">รายวิชา</label>
                         <div class="col-sm">
                           <select class="custom-select" id="cboSubject">
-                            <option value="000000" selected>Choose...</option>
+                            <option selected>Choose...</option>
                           </select>
                         </div>
                       </div>
@@ -196,7 +196,7 @@
               </form>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-primary" onClick="onSave()">Save changes</button>
               </div>
             </div>
           </div>
@@ -371,6 +371,7 @@
         }else{
           $.getJSON( "http://localhost:3000/room", function( data ) {
             var myschedule = getSchedule(data,"room");
+            //console.log(myschedule);
             myschedule.sort(function(a,b){  //เรียงเวลาใน json ใหม่จากน้อยไปมาก
                if(a.start > b.start){ return 1}
                 if(a.start < b.start){ return -1}
@@ -387,6 +388,7 @@
         if($("#mydate").val()!=""){
           $.getJSON( "http://localhost:3000/room", function( data ) {
             var myschedule = getSchedule(data,"room");
+            //console.log(myschedule);
             myschedule.sort(function(a,b){  //เรียงเวลาใน json ใหม่จากน้อยไปมาก
                if(a.start > b.start){ return 1}
                 if(a.start < b.start){ return -1}

@@ -109,14 +109,12 @@
           txtPwd: $("#txtPwd").val()
         }
         $.post("/login", form, function (result) {
-          $.post("/login", form, function (result) {
-            if (result) {
-              sessionStorage.setItem('user', JSON.stringify(result));
-              window.location.href = '/public/schedule.html';
-            } else {
-              alert('Invalid user or password')
-            }
-          });
+          if (result) {
+            sessionStorage.setItem('user', JSON.stringify(result));
+            window.location.href = '/public/schedule.html';
+          } else {
+            alert('Invalid user or password')
+          }
         });
       });
 
