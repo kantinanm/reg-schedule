@@ -277,15 +277,16 @@ function getTable(data,dateSearch){
       onRoom:$("#onRoom").val(),
       user:myAccount.internet_account,
     };
-    insert.span = insert.endTime - insert.startTime + 1;
+    insert.span = insert.endTime - insert.startTime;
     $.post("/insert", insert, function (result) {
       if (result) {
         alert("OK");
         $("#example tr").each((i, tr)=>{
           var th = $(tr).find("th:first-child span").text();
           if(th===$("#ondate").val()){
-            for(let i=0;i<insert.span;i++){
-              $(tr).find("td:nth-child("+(insert.col+i)+")").append('<i class="material-icons" title="'+insert.cboSubject+'">sentiment_satisfied</i>');
+            for(let j=0;j<insert.span;j++){
+              console.log(insert.col+" "+j);
+              $(tr).find("td:nth-child("+(insert.col+j)+")").append('<i class="material-icons" title="'+insert.cboSubject+'">event_available</i>');
             }
           }
         })

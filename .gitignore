@@ -10,4 +10,3 @@ package-lock.json
 assets/*
 public/test.html
 public/php
-db
