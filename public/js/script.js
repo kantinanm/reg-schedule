@@ -143,7 +143,7 @@ function uniqueSub(arr) {
 
 function startDate(before) {
   /* --------------- function find week เพื่อแสดงวันที่ใน table ------------------*/
-  var dates = new Date();
+  var dates = new Date(serverTime);
   var dateSearch = $('#mydate').val();
   if ($.trim(dateSearch) == '') {
     dates = dates;
@@ -158,7 +158,7 @@ var reg;
 function getTable(data, dateSearch) {
   reg = data;
   /* --------------- function create table ------------------*/
-  var dates = new Date();
+  var dates = new Date(serverTime);
   if (dateSearch == null) { //-----------if mydate is null ---------------
     dates = dates;
   } else {
@@ -230,7 +230,7 @@ function getTable(data, dateSearch) {
     table_body += getDate.in_date + "<br><span style='font-weight:normal;font-size:12px;'>" + dateShow[num] + "</span>";
     table_body += '</th>';
     for (var i = chk; i < 13; i++) {
-      $.each(data, function (key, val) {
+      $.each(data, function (key, val) { //มีตารางสอน
         if ($("#cboRoom option:selected").text() == val.room) {
           if (val.date == getDate.in_date) {
             if (i == val.col) {
@@ -243,12 +243,34 @@ function getTable(data, dateSearch) {
           }
         }
       });
-      if (i >= chk) {
+      if (i >= chk) { //ไม่มีตารางสอน
         if (i == 4) {
           table_body += '<td disabled style="background-color:grey;">';
         } else {
-          table_body += '<td style="cursor:pointer" class="align-middle" data-toggle="modal"';
-          table_body += 'data-target="#bookRoom" onClick="onTdClick(this,' + i + ',\'' + dateShow[num] + '\',\'' + getDate.in_date + '\')">';
+          var myDate = dateShow[num].split("/");
+          myDate = myDate[2] + "-" + myDate[1] + "-" + myDate[0];
+          let create = false;
+          //const index = bookRoom.filter(x=>x.dates===new Date(myDate).setHours(0, 0, 0, 0))
+          const index = bookRoom.findIndex(x => x.dates === new Date(myDate).setHours(0, 0, 0, 0) && x.col === i)
+          if (index > -1) {
+            /*console.log(bookRoom[index],num,i)
+            $("#example tr:nth-child("+(num+1)+") td:nth-child("+i+")").attr('colspan', bookRoom[index].span).append('<i class="material-icons" title="' + bookRoom[index].code + '">event_available</i>');
+            console.log( $("#example tr:nth-child("+(num+1)+") td:nth-child("+i+")"))*/
+            table_body += '<td class="align-middle bg-info" colspan="' + bookRoom[index].span + '">';
+            table_body += bookRoom[index].sub_id;
+            i += bookRoom[index].span - 1;
+            create = true;
+          }
+          if (new Date(serverTime).setHours(0, 0, 0, 0) > new Date(myDate).setHours(0, 0, 0, 0)) { //อดีต
+            if (create === false) {
+              table_body += '<td disabled style="background-color:grey;">';
+            }
+          } else { //ปัจจุบัน, อนาคต
+            if (create === false) {
+              table_body += '<td style="cursor:pointer" class="align-middle" data-toggle="modal"';
+              table_body += 'data-target="#bookRoom" onClick="onTdClick(this,' + i + ',\'' + dateShow[num] + '\',\'' + getDate.in_date + '\')">';
+            }
+          }
         }
         table_body += '</td>';
       }
@@ -291,7 +313,7 @@ onSave = () => {
   myDate = myDate[2] + "-" + myDate[1] + "-" + myDate[0];
   var insert = {
     cboSubject: $("#cboSubject").val(),
-    ondate: myDate,
+    ondate: new Date(myDate).setHours(0, 0, 0, 0),
     col: Number($("#startTime").val().split(":")[0]) - 8,
     startTime: Number($("#startTime").val().split(":")[0]),
     endTime: Number($("#endTime").val().split(":")[0]),
