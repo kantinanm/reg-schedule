@@ -112,7 +112,7 @@
           }
         });
       });
-      
+
       $(document).ready(function(){
          $("#mydate").datepicker({
            changeYear: true,
@@ -141,7 +141,7 @@
         /* --------------- เมื่อมีการเลือกอาคารเรียน ให้ loop แสดงห้องทั้งหมดในอาคาร ------------------*/
         $("#cboRoom option").remove();
         $("#cboRoom").append('<option selected>Choose...</option>');
-        $.getJSON( "http://localhost:3000/building/"+$("#cboBuilding").val(), function( data ) {
+        $.getJSON( "/building/"+$("#cboBuilding").val(), function( data ) {
           if($("#cboBuilding").val() === "EE"){ //ถ้า cboBuilding เท่ากับ EE ให้เพิ่มห้อง EE 315
             $('#cboRoom')
             .append($("<option></option>")
@@ -166,7 +166,7 @@
         if($("#cboBuilding").val()=="Choose..."){
           alert("กรุณาเลือกอาคารเรียนและห้องเรียนก่อนด้วยค่ะ");
         }else{
-          $.getJSON( "http://localhost:3000/room", function( data ) {
+          $.getJSON( "/room", function( data ) {
             var myschedule = getSchedule(data,"room");
             myschedule.sort(function(a,b){  //เรียงเวลาใน json ใหม่จากน้อยไปมาก
                if(a.start > b.start){ return 1}
@@ -182,7 +182,7 @@
       $( "#cboRoom" ).change(function() {
         /* --------------- เมื่อ cboRoom มีการเปลี่ยนแปลงจากการค้นหาแบบห้องเรียน ------------------*/
         if($("#mydate").val()!=""){
-          $.getJSON( "http://localhost:3000/room", function( data ) {
+          $.getJSON( "/room", function( data ) {
             var myschedule = getSchedule(data,"room");
             myschedule.sort(function(a,b){  //เรียงเวลาใน json ใหม่จากน้อยไปมาก
                if(a.start > b.start){ return 1}
@@ -193,7 +193,7 @@
             $('#tableDiv').html(myTable);
           });
         }else{
-          $.getJSON( "http://localhost:3000/room", function( data ) {
+          $.getJSON( "/room", function( data ) {
             var myschedule = getSchedule(data,"room");
             myschedule.sort(function(a,b){  //เรียงเวลาใน json ใหม่จากน้อยไปมาก
                if(a.start > b.start){ return 1}

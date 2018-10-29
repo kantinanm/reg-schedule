@@ -253,7 +253,7 @@ function getTable(data, dateSearch) {
           const index = bookRoom.findIndex(x => x.dates === new Date(myDate).setHours(0, 0, 0, 0) && x.col === i)
           if (index > -1) {
             table_body += '<td class="align-middle bg-info" colspan="' + bookRoom[index].span + '">';
-            table_body += bookRoom[index].sub_id;
+            table_body += bookRoom[index].code;
             i += bookRoom[index].span - 1;
             create = true;
           }

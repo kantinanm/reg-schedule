@@ -36,8 +36,8 @@ exports.ldaplogin = function (opt, res) {
 };
 
 exports.InsertDB = function (opt, res) {
-  var sql = "INSERT INTO schedule(sub_id,col,dates,start,end,span,room,internet_account)";
-  sql += " VALUES ('" + opt.cboSubject + "', '" + opt.col + "', " + opt.ondate + ", '" + opt.startTime + "', '" + opt.endTime + "', '" + opt.span + "', '" + opt.onRoom + "','" + opt.user + "')";
+  var sql = "INSERT INTO schedule(code,col,dates,start,end,span,room,internet_account,commits)";
+  sql += " VALUES ('" + opt.cboSubject + "', '" + opt.col + "', " + opt.ondate + ", '" + opt.startTime + "', '" + opt.endTime + "', '" + opt.span + "', '" + opt.onRoom + "','" + opt.user + "',0)";
   con.query(sql, function (err, result) {
     if (err) res(null);
     else res(result);
