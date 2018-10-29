@@ -158,9 +158,9 @@ var reg;
 function getTable(data, dateSearch) {
   reg = data;
   /* --------------- function create table ------------------*/
-  var dates = new Date(serverTime);
+  var dates;
   if (dateSearch == null) { //-----------if mydate is null ---------------
-    dates = dates;
+    dates = new Date(serverTime);
   } else {
     var res = dateSearch.split("/");
     dates = new Date(res[2], res[1] - 1, res[0]);
@@ -250,12 +250,8 @@ function getTable(data, dateSearch) {
           var myDate = dateShow[num].split("/");
           myDate = myDate[2] + "-" + myDate[1] + "-" + myDate[0];
           let create = false;
-          //const index = bookRoom.filter(x=>x.dates===new Date(myDate).setHours(0, 0, 0, 0))
           const index = bookRoom.findIndex(x => x.dates === new Date(myDate).setHours(0, 0, 0, 0) && x.col === i)
           if (index > -1) {
-            /*console.log(bookRoom[index],num,i)
-            $("#example tr:nth-child("+(num+1)+") td:nth-child("+i+")").attr('colspan', bookRoom[index].span).append('<i class="material-icons" title="' + bookRoom[index].code + '">event_available</i>');
-            console.log( $("#example tr:nth-child("+(num+1)+") td:nth-child("+i+")"))*/
             table_body += '<td class="align-middle bg-info" colspan="' + bookRoom[index].span + '">';
             table_body += bookRoom[index].sub_id;
             i += bookRoom[index].span - 1;

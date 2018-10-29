@@ -94,6 +94,25 @@
       </div>
 
     <script>
+      var serverTime;
+      var bookRoom;
+      $.getJSON("/time", function (data) {
+        serverTime = data;
+        var d = new Date(serverTime);
+        var n = d.getDay();
+        let dates = {
+          start: new Date(serverTime).setDate(d.getDate()-n),
+          end: new Date(serverTime).setDate(d.getDate()+6-n),
+        };
+        $.post("/bookroom", dates, function (result) {
+          if (result) {
+            bookRoom=result;
+          } else {
+            alert('Invalid');
+          }
+        });
+      });
+      
       $(document).ready(function(){
          $("#mydate").datepicker({
            changeYear: true,

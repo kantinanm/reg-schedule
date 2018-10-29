@@ -46,7 +46,7 @@ app.use('*.php', function (request, response, next) {
 	});
 });*/
 app.get('/time', function (req, res) {
-    res.json(new Date("2018-10-31").getTime());
+    res.json(new Date().getTime());
 });
 
 app.post('/login', function (req, res) {
