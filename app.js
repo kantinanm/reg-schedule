@@ -53,6 +53,18 @@ app.post('/insert', function (req, res) {
   });
 });
 
+app.post('/comfirmroom', function (req, res) {
+  condb.ConfirmRoom(req.body, function (result) {
+    res.json(result);
+  });
+});
+
+app.post('/delete', function (req, res) {
+  condb.DeleteDB(req.body, function (result) {
+    res.json(result);
+  });
+});
+
 app.get("/user", function (req, res) {
   condb.listUser(function (result) {
     res.json(result);

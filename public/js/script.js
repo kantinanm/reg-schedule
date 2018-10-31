@@ -252,7 +252,12 @@ function getTable(data, dateSearch) {
           let create = false;
           const index = bookRoom.findIndex(x => x.dates === new Date(myDate).setHours(0, 0, 0, 0) && x.col === i)
           if (index > -1) {
-            table_body += '<td class="align-middle bg-info" colspan="' + bookRoom[index].span + '">';
+            table_body += '<td class="align-middle" colspan="' + bookRoom[index].span + '">';
+            if (bookRoom[index].approve < 1) {
+              table_body += '<i class="material-icons" style="vertical-align:middle">hourglass_empty</i>';
+            } else {
+              table_body += '<i class="material-icons" style="vertical-align:middle">event_available</i>';
+            }
             table_body += bookRoom[index].code;
             i += bookRoom[index].span - 1;
             create = true;
