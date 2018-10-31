@@ -53,7 +53,7 @@ app.post('/insert', function (req, res) {
   });
 });
 
-app.post('/comfirmroom', function (req, res) {
+app.post('/confirmroom', function (req, res) {
   condb.ConfirmRoom(req.body, function (result) {
     res.json(result);
   });
