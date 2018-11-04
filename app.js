@@ -21,6 +21,10 @@ db.on('connect', function () {
   console.log('database connected')
 });
 
+function isAuthenticated(req, res, next) {
+  return next();
+}
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 var execPHP = require('./execphp.js')();
@@ -33,7 +37,7 @@ app.use('*.php', function (request, response, next) {
   });
 });
 
-app.get('/time', function (req, res) {
+app.get('/time', isAuthenticated, function (req, res) {
   res.json(new Date().getTime());
 });
 
