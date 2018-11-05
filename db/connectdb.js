@@ -45,14 +45,14 @@ exports.InsertDB = function (opt, res) {
 }
 
 exports.listBookRoom = function (opt, res) {
-  con.query("SELECT * FROM schedule WHERE dates>=" + opt.start + " AND dates<=" + opt.end, function (err, rows) {
+  con.query("SELECT * FROM schedule", function (err, rows) {
     if (err) res(null);
     else res(rows);
   });
 };
 
 exports.ConfirmRoom = function (opt, res) {
-  var sql = "UPDATE schedule SET approve="+opt.approve+" WHERE schedule_id='"+opt.id+"' ";
+  var sql = "UPDATE schedule SET approve=" + opt.approve + " WHERE schedule_id='" + opt.id + "' ";
   con.query(sql, function (err, result) {
     if (err) res(null);
     else res(result);
@@ -60,7 +60,7 @@ exports.ConfirmRoom = function (opt, res) {
 }
 
 exports.DeleteDB = function (opt, res) {
-  var sql = "UPDATE schedule SET approve=3 WHERE schedule_id='"+opt.id+"' ";
+  var sql = "UPDATE schedule SET approve=3 WHERE schedule_id='" + opt.id + "' ";
   con.query(sql, function (err, result) {
     if (err) res(null);
     else res(result);
