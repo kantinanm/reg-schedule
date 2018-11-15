@@ -25,6 +25,8 @@ function isAuthenticated(req, res, next) {
   return next();
 }
 
+app.use('/scripts', express.static(__dirname + '/node_modules/mdbootstrap/'));
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 var execPHP = require('./execphp.js')();
@@ -86,7 +88,7 @@ app.use("/public", express.static(__dirname + "/public"));
 app.set("view engine", "ejs");
 
 app.get('/', function (req, res) {
-  res.sendFile('public/index.html', { root: __dirname });
+  res.sendFile('public/indexcss.html', { root: __dirname });
 });
 
 
