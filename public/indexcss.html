@@ -19,36 +19,60 @@
   <link href="https://fonts.googleapis.com/css?family=Mali" rel="stylesheet">
 
   <link href="/public/navbar/navbar.css" rel="stylesheet">
+  <link href="/public/menu/menu.css" rel="stylesheet">
 </head>
 
 <body>
   <!-- Start your project here-->
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark scrolling-navbar">
-    <a class="navbar-brand" href="#"><strong>ระบบจองห้องเรียนออนไลน์</strong></a>
-    <!--<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>-->
+      <div id="menu-container">
+          <div id="menu-wrapper">
+             <div id="hamburger-menu"><span></span><span></span><span></span></div>
+             <!-- hamburger-menu -->
+          </div>
+          <!-- menu-wrapper -->
+          <ul class="menu-list accordion">
+             <li id="nav1" class="toggle accordion-toggle"> 
+                <span class="icon-plus"></span>
+                <a class="menu-link" href="#">Menu1</a>
+             </li>
+             <!-- accordion-toggle -->
+             <ul class="menu-submenu accordion-content">
+                <li><a class="head" href="#">Submenu1</a></li>
+                <li><a class="head" href="#">Submenu2</a></li>
+                <li><a class="head" href="#">Submenu3</a></li>
+             </ul>
+             <!-- menu-submenu accordon-content-->
+             <li id="nav2" class="toggle accordion-toggle"> 
+                <span class="icon-plus"></span>
+                <a class="menu-link" href="#">Menu2</a>
+             </li>
+             <!-- accordion-toggle -->
+             <ul class="menu-submenu accordion-content">
+                <li><a class="head" href="#">Submenu1</a></li>
+                <li><a class="head" href="#">Submenu2</a></li>
+             </ul>
+             <!-- menu-submenu accordon-content-->
+                  <li id="nav3" class="toggle accordion-toggle"> 
+                <span class="icon-plus"></span>
+                <a class="menu-link" href="#">Menu3</a>
+             </li>
+             <!-- accordion-toggle -->
+             <ul class="menu-submenu accordion-content">
+                <li><a class="head" href="#">Submenu1</a></li>
+                <li><a class="head" href="#">Submenu2</a></li>
+                <li><a class="head" href="#">Submenu3</a></li>
+                <li><a class="head" href="#">Submenu4</a></li>
+             </ul>
+             <!-- menu-submenu accordon-content-->
+          </ul>
+          <!-- menu-list accordion-->
+       </div>
+       <!-- menu-container -->
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
-        <!--<li class="nav-item active">
-          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Profile</a>
-        </li>-->
       </ul>
-      <form class="form-inline">
-        <div class="md-form my-0">
-          <input class="form-control mr-sm-2" type="text" placeholder="Username">
-        </div>
-        <div class="md-form my-0">
-          <input class="form-control mr-sm-2" type="text" placeholder="Password">
-        </div>
-      </form>
+      <a class="navbar-brand" href="#"><strong>ระบบจองห้องเรียนออนไลน์</strong></a>
     </div>
   </nav>
   <!--Main Navigation-->
@@ -77,6 +101,8 @@
   <script type="text/javascript" src="/scripts/js/bootstrap.min.js"></script>
   <!-- MDB core JavaScript -->
   <script type="text/javascript" src="/scripts/js/mdb.min.js"></script>
+
+  <script src="/public/menu/menu.js"></script>
 </body>
 
 </html>
