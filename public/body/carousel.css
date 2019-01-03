@@ -1,0 +1,7 @@
+.fullpage .fp-section.fp-table,
+.fullpage .fp-slide.fp-table {
+    display: grid;
+    table-layout: fixed;
+    width: 100%;
+    vertical-align:bottom;
+  }
