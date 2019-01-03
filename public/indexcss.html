@@ -19,58 +19,28 @@
   <link href="https://fonts.googleapis.com/css?family=Mali" rel="stylesheet">
 
   <link href="/public/body/body.css" rel="stylesheet">
-  <link href="/public/menu/menu.css" rel="stylesheet">
+  <link href="/public/navbar/navbar.css" rel="stylesheet">
+  <link href="/public/button/button.css" rel="stylesheet">
 </head>
 
 <body>
   <!-- Start your project here-->
-  <nav class="navbar fixed-top navbar-expand-lg navbar-dark scrolling-navbar">
-    <div id="menu-container">
-      <div id="menu-wrapper">
-        <div id="hamburger-menu"><span></span><span></span><span></span></div>
-        <!-- hamburger-menu -->
+  <header>
+    <nav class="navbar fixed-top navbar-dark nav-bg">
+      <a class="navbar-brand" href="#">
+        Navbar
+      </a>
+      <div class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="text" placeholder="Username" name="txtUsr" id="txtUsr" />
+        <input class="form-control mr-sm-2" type="password" placeholder="Password" name="txtPwd" id="txtPwd" />
+        <button class="btn btn-elegant btn-gradient my-2 my-sm-0" id="cmdSummit">Login</button>
       </div>
-      <!-- menu-wrapper -->
-      <ul class="menu-list accordion">
-        <li id="nav1" class="toggle accordion-toggle">
-          <span class="icon-plus"></span>
-          <a class="menu-link" href="#">Home</a>
-        </li>
-        <!-- accordion-toggle -->
-        <ul class="menu-submenu accordion-content">
-          <li><a class="head" href="#">Submenu1</a></li>
-          <li><a class="head" href="#">Submenu2</a></li>
-          <li><a class="head" href="#">Submenu3</a></li>
-        </ul>
-        <!-- menu-submenu accordon-content-->
-        <li id="nav2" class="toggle accordion-toggle">
-          <span class="icon-plus"></span>
-          <a class="menu-link" href="#">Calender</a>
-        </li>
-        <!-- accordion-toggle -->
-        <ul class="menu-submenu accordion-content">
-          <li><a class="head" href="#">Submenu1</a></li>
-          <li><a class="head" href="#">Submenu2</a></li>
-        </ul>
-        <!-- menu-submenu accordon-content-->
-        <li id="nav3" class="toggle accordion-toggle">
-          <span class="icon-plus"></span>
-          <a class="menu-link" href="#">Download</a>
-        </li>
-        <!-- accordion-toggle -->
-        <ul class="menu-submenu accordion-content">
-          <li><a class="head" href="#">Submenu1</a></li>
-          <li><a class="head" href="#">Submenu2</a></li>
-          <li><a class="head" href="#">Submenu3</a></li>
-          <li><a class="head" href="#">Submenu4</a></li>
-        </ul>
-        <!-- menu-submenu accordon-content-->
-      </ul>
-      <!-- menu-list accordion-->
-    </div>
-    <!-- menu-container -->
-  </nav>
-  <!--Main Navigation-->
+    </nav>
+  </header>
+  <main>
+    
+  </main>
+  <!--Start bg bubbles-->
   <div class="background">
     <ul class="bg-bubbles">
       <li></li>
@@ -85,6 +55,7 @@
       <li></li>
     </ul>
   </div>
+  <!--End bg bubbles-->
   <!-- /Start your project here-->
 
   <!-- SCRIPTS -->
