@@ -5,7 +5,10 @@ body, html {
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
-    background: #50a3a2;
-    background: -webkit-linear-gradient(top left, #078EFF 0%, #09BAE8 50%, #07FFF3 100%);
-    background: linear-gradient(to bottom right, #078EFF 0%, #09BAE8 50%, #07FFF3 100%);
+    /*background: #50a3a2;
+    background: -webkit-linear-gradient(top left, #7534FF 0%, #9D32E8 50%, #E234FF 100%);
+    background: linear-gradient(to bottom right, #7534FF 0%, #9D32E8 50%, #E234FF 100%);*/
+    background: #E8756B;
+    background: -webkit-linear-gradient(top left, #FF6984 0%, #E8756B 50%, #FF9C80 100%);
+    background: linear-gradient(to bottom right, #FF6984 0%, #E8756B 50%, #FF9C80 100%);
   }
