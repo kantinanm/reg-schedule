@@ -63,7 +63,7 @@
   width: 100%;
 }
 .button.success .icon .fa, .button:hover .icon .fa {
-  font-size: 30px;
+  font-size: 20px;
 }
 .button.success {
   background-color: #27ae60;
@@ -78,7 +78,7 @@
   opacity: .9;
 }
 .button:hover .icon .fa-lock {
-  height: 30px;
+  height: 20px;
 }
 .button:active {
   opacity: 1;
