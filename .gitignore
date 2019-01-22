@@ -8,5 +8,4 @@ config.js
 .idea/*
 package-lock.json
 assets/*
-public/test.html
 public/php
